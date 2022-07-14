@@ -1,0 +1,22 @@
+
+{
+    "server_port": "8080",
+    "author": "fengsh",
+    "database": {
+        "host": "localhost",
+        "user": "fengsh",
+        "password": "!23456fF",
+        "database": "NetToolkit",
+        "port": 3306,
+        "timeout": 7200000,
+        "sqliteFolder": "./"
+    },
+    "databaseStage": {
+        "host": "localhost",
+        "user": "fengsh",
+        "password": "!23456fF",
+        "database": "NetToolkitStage",
+        "port": 3306,
+        "timeout": 1000
+    }
+}
