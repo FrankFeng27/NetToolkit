@@ -1,0 +1,5 @@
+{
+    "extension": ["js", "ts"],
+    "watch-files": ["public/**/"],
+    "watch-ignore": ["test/**/"]
+}
