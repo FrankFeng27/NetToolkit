@@ -9,3 +9,8 @@ export class InvalidUserNameError extends Error {
     super(`Can't find specified user name ${userName}`);
   }
 }
+export class InvalidSessionUserError extends Error {
+  constructor() {
+    super("Invalid session or session user")
+  }
+}

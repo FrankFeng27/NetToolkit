@@ -368,12 +368,19 @@ class MysqlDatabase implements IDatabase {
           })
         }).catch(err => reject(err));
       });
-      /// const uid = await this.get_user_id(user);
-      /// const res = await this.pool.query(`insert into SpeechLibraries (name, content, uid, configuration) values (?, ?, ?, ?)`, [
-      ///   name, content, uid, configuration
-      /// ]);
-      /// console.log(res);
-      /// return {id: res.insertId, content, name, userName: user, configuration};
+    }
+    updateSpeechLibrary(id: number, name: string, content: string, user: string, configuration: string): Promise<ISpeechLibraryRecord> {
+      return new Promise((resolve, reject) => {
+        this.pool.query(`update SpeechLibraries s inner join UserTable u on s.uid=u.id
+        set s.name=?, s.content=?, s.configuration=?
+        where u.name=? and s.id=?`, [name, content, configuration, user, id], (err, result) => {
+          if (err) {
+            reject(err);
+            return;
+          }
+          resolve({id, name, content, userName: user, configuration});
+        });
+      });
     }
     async removeSpeechLibrary(id: number): Promise<boolean> {
       if (!this.isConnected()) {

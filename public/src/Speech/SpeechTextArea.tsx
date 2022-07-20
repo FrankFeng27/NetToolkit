@@ -16,12 +16,13 @@ const TextArea = styled.textarea`
   flex-grow: 10;
 `;
 
-interface SpeechTextAreaProps {
+interface NTKSpeechTextAreaProps {
   text?: string;
   onTextChanged?: (text: string)=>void;
 }
 
-export const SpeechTextarea: React.FC<SpeechTextAreaProps> = (props: SpeechTextAreaProps) => {
+export const NTKSpeechTextarea: React.FC<NTKSpeechTextAreaProps> = (props: NTKSpeechTextAreaProps) => {
+  const text = props.text ?? "";
   function onTextChanged(e: React.ChangeEvent<HTMLTextAreaElement>) {
     if (!e.target || !e.target.value) {
       return;
@@ -33,7 +34,7 @@ export const SpeechTextarea: React.FC<SpeechTextAreaProps> = (props: SpeechTextA
   }
   return (
     <TextAreaContainer>
-      <TextArea onChange={onTextChanged} placeholder="Type here ..."></TextArea>
+      <TextArea onChange={onTextChanged} placeholder="Type here ...">{text}</TextArea>
     </TextAreaContainer>
   );
 };

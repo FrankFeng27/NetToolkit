@@ -3,7 +3,7 @@ import styled from "styled-components";
 import { ExpandMore as ExpandMoreIcon, ChevronRight as ChevronRightIcon} from "@material-ui/icons";
 import { styled as muiStyled } from "@material-ui/core/styles";
 import { TreeView, TreeItem, treeItemClasses } from "@material-ui/lab";
-import { SpeechLibraryItem, SpeechLibraryTreeNode } from "../../dataprovider/data-types";
+import { SpeechLibraryItem, SpeechLibraryTreeNode } from "../dataprovider/data-types";
 
 const SideNavbarContainer = styled.div`
   width: 120px;
@@ -124,11 +124,11 @@ const createLibraryWidgets = (libs?: SpeechLibraryItem[]) => {
   </LibraryTreeContainer>);
 };
 
-export interface SpeechSideNavProps {
+export interface NTKSpeechSideNavProps {
   libraries?: SpeechLibraryItem[];
 }
 
-export const SpeechSideNav: React.FC<SpeechSideNavProps> = (props: SpeechSideNavProps) => {
+export const NTKSpeechSideNav: React.FC<NTKSpeechSideNavProps> = (props: NTKSpeechSideNavProps) => {
   return (
     <SideNavbarContainer>
       <SideNavItem>Add Library ...</SideNavItem>
