@@ -1,0 +1,10 @@
+{
+    "name": "login",
+    "version": "0.0.1",
+    "main": "index.js",
+    "private": true,
+    "plugin": {
+        "consumes": ["config", "commUtils", "dataaccessor"],
+        "provides": ["login"]
+    }
+}
