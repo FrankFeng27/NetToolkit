@@ -2,6 +2,7 @@
 import {combineReducers} from "redux";
 import { LogInTypeEnum } from "../dataprovider/data-types";
 import utils from "../utils/utils"
+import speechReducer from "../Speech/SpeechSlice";
 
 
 const imgWatermarkTool = (state : any, action) => {
@@ -87,4 +88,10 @@ const speechTool = (state: any, action: {type: string, load: any}) => {
   }
 };
 
-export default combineReducers({imgWatermarkTool, memoTool, loginTool, speechTool});
+export default combineReducers({
+    imgWatermarkTool, 
+    memoTool, 
+    loginTool,
+    speechTool,
+    speeches: speechReducer
+});

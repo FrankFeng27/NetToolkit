@@ -1,3 +1,4 @@
+import { SpeechState } from "../Speech/SpeechSlice";
 
 export interface PanelRouteProps {
   openDrawer: boolean;
@@ -18,10 +19,10 @@ export interface MemoData {
 }
 
 export interface SpeechLibraryItem {
-  id: number,
+  id?: number,
   name: string,
   content: string,
-  userName: string,
+  userName?: string,
   configuration: string
 }
 export interface SpeechLibraryTreeNode {
@@ -31,4 +32,8 @@ export interface SpeechLibraryTreeNode {
   content?: string;
   children?: SpeechLibraryTreeNode[];
   configuration?: string;
+}
+
+export interface RootState {
+  speeches: SpeechState;
 }

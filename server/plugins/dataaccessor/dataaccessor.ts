@@ -189,6 +189,19 @@ class DatabaseAccessor implements IDatabaseAccessor {
         }
       }
     }
+    async updateSpeechLibrary(id: number, name: string, content: string, user: string, configuration: string): Promise<ISpeechLibraryRecord> {
+      try {
+        const res = await this.currentDb.updateSpeechLibrary(id, name, content, user, configuration);
+        return res;
+      } catch (err) {
+        if (err instanceof InvalidUserNameError) {
+          throw err;
+        } else {
+          this.commUtils.handleError(err);
+          return emptySpeechLibrary;
+        }
+      }
+    }
     async removeSpeechLibrary(id: number): Promise<boolean> {
       try {
         return await this.currentDb.removeSpeechLibrary(id);

@@ -37,13 +37,20 @@ export class DataAccessor {
       const res = await axios.get('/api/v1/memos');
       return res.status === 200;
     }
-    static async getSpeechLibraries(): Promise<boolean> {
+    static async getSpeechLibraries(): Promise<any> {
       const res = await axios.get('/api/v1/speechLibraries');
-      return res.status === 200;
+      return res;
     }
     static async removeSpeechLibrary(libraryId: string): Promise<boolean> {
       const res = await axios.delete(`/api/v1/speechLibrary/${libraryId}`);
       return res.status === 200;
+    }
+    static async addSpeechLibrary(name: string, content: string, configuration: string) {
+      const res = await axios.post('/api/v1/speechLibrary', {name, content, configuration});
+      return res;
+    }
+    static async updateSpeechLibrary(id: string, name: string, content: string, configuration: string) {
+      const res = await axios.post('/api/v1/speechLibrary', {id, name, content, configuration});
     }
 }
 

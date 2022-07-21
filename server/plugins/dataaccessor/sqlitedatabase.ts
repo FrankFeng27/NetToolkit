@@ -305,6 +305,15 @@ class SqliteDatabase implements IDatabase {
       ]);
       return {id: res.lastID, name, content, userName: user, configuration};
     }
+    async updateSpeechLibrary(id: number, name: string, content: string, user: string, configuration: string): Promise<ISpeechLibraryRecord> {
+      // Todo: I don't know how to update query with inner join in Sqlite, so we don't allow to change user when updating SpeechLibraries by now.
+      /// const res = await this.db.run(`update SpeechLibraries as s inner join UserTable u on s.uid=u.id
+      /// set s.name=?, s.content=?, s.configuration=?
+      /// where u.name=? and s.id=?`, [name, content, configuration, user, id]);
+      const res = await this.db.run(`update SpeechLibraries set name=?, content=?, configuration=?
+      where id=?`, [name, content, configuration, id]);
+      return {id, name, content, userName: user, configuration};
+    }
     async removeSpeechLibrary(id: number): Promise<boolean> {
       if (!this.isConnected()) {
         throw new DatabaseUnconnectedError();
