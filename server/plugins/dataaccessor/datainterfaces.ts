@@ -46,6 +46,7 @@ export interface IDatabase {
     removeMemo(memoId: number, user: string): Promise<boolean>;
     getMemos(user: string): Promise<IMemoRecord[]>;
     addSpeechLibrary(name: string, content: string, user: string, configuration: string): Promise<ISpeechLibraryRecord>;
+    updateSpeechLibrary(id: number, name: string, content: string, user: string, configuration: string): Promise<ISpeechLibraryRecord>;
     removeSpeechLibrary(id: number): Promise<boolean>;
     getSpeechLibraries(user: string): Promise<Array<ISpeechLibraryRecord>>;
 }
@@ -67,6 +68,7 @@ export interface IDatabaseAccessor {
     updateMemo(notebook: string, note: string, memo: string, user: string): Promise<boolean>;
     getMemos(name: string): Promise<IMemoRecord[]>;
     addSpeechLibrary(name: string, content: string, user: string, configuration: string): Promise<ISpeechLibraryRecord>;
+    updateSpeechLibrary(id: number, name: string, content: string, user: string, configuration: string): Promise<ISpeechLibraryRecord>;
     removeSpeechLibrary(id: number): Promise<boolean>;
     getSpeechLibraries(user: string): Promise<Array<ISpeechLibraryRecord>>;
 }

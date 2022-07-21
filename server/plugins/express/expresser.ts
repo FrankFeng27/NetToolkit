@@ -3,6 +3,7 @@
 
 import {IUserLogin} from "../login/userlogin";
 import { emptySpeechLibrary, IDatabaseAccessor, IMemoRecord, ISpeechLibraryRecord } from "../dataaccessor/datainterfaces";
+import { InvalidSessionUserError } from "../datatypes/errors";
 
 export enum LoginErrorType {
     ERROR_SUCCESS = "Success",
@@ -151,12 +152,22 @@ class Expresser implements IExpresser {
     }
     async addSpeechLibrary(request): Promise<ISpeechLibraryRecord> {
       try {
-        const user = request.body.user;
-        const name = request.body.libraryName;
-        const content = request.body.libraryContent;
+        const user = request.session?.user;
+        if (!user) {
+          this.commUtils.handleError(new InvalidSessionUserError()); 
+          return emptySpeechLibrary;
+        }
+        const id = request.body.id as number;
+        const name = request.body.name;
+        const content = request.body.content;
         const configuration = request.body.configuration;
 
-        return await this.dataAccessor.addSpeechLibrary(name, content, user, configuration);
+        if (id === undefined) {
+          const libName = name.length > 0 ? name : "/temporary~1";
+          return await this.dataAccessor.addSpeechLibrary(libName, content, user, configuration);
+        } else {
+          return await this.dataAccessor.updateSpeechLibrary(id, name, content, user, configuration);
+        }
       } catch (err) {
         this.commUtils.handleError(err);
         return emptySpeechLibrary;

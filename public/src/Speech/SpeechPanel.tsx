@@ -2,29 +2,29 @@ import * as React from "react";
 import styled from "styled-components";
 import { SpeechLibraryItem } from "../dataprovider/data-types";
 import LoginPanel from "../Components/Widgets/LoginPanel";
-import { SpeechTextarea } from "../Components/Widgets/SpeechTextArea";
-import { SpeechToolbar } from "../Components/Widgets/SpeechToolbar";
-import { SpeechSideNav } from "../Components/Widgets/SpeechSideNav";
+import { NTKSpeechTextarea } from "./SpeechTextArea";
+import { NTKSpeechToolbar, SpeechPlayState } from "./SpeechToolbar";
+import { NTKSpeechSideNav } from "./SpeechSideNav";
 
-const PanelContainer = styled.div`
+const NTKPanelContainer = styled.div`
   height: 100%;
   display: flex;
   flex-direction: column;
 `;
 
-const VerboseContainer = styled.div`
+const NTKVerboseContainer = styled.div`
   flex-grow: 10;
   display: flex;
   flex-direction: row;
 `;
-const SpeechWorkArea = styled.div`
+const NTKSpeechWorkArea = styled.div`
   flex-grow: 10;
   display: flex;
   flex-direction: column;
   padding: 20px 10px 40px 10px;
 `;
 
-interface SpeechPanelProps {
+export interface NTKSpeechPanelProps {
   text?: string;
   onTextChanged(text: string): void;
   isLoggedIn: boolean;
@@ -33,18 +33,29 @@ interface SpeechPanelProps {
   libraries?: SpeechLibraryItem[];
 }
 
-const SpeechPanel: React.FC<SpeechPanelProps>  = (props: SpeechPanelProps) => {
+const NTKSpeechPanel: React.FC<NTKSpeechPanelProps>  = (props: NTKSpeechPanelProps) => {
+  const [playState, setPlayState] = React.useState<SpeechPlayState>(SpeechPlayState.kUnknown);
+  function onPlay() {
+    const synth = window.speechSynthesis;
+    if (props.text) {
+      const utter = new SpeechSynthesisUtterance(props.text);
+      synth.speak(utter);
+      
+    }
+  }
   return (
-    <PanelContainer>
+    <NTKPanelContainer>
       {props.isLoggedIn ? (
-        <VerboseContainer>
-        <SpeechSideNav libraries={props.libraries} />
-        <SpeechWorkArea>
-          <SpeechToolbar></SpeechToolbar>
-          <SpeechTextarea {...props}></SpeechTextarea>
-        </SpeechWorkArea>
-      </VerboseContainer>
+        <NTKVerboseContainer>
+        <NTKSpeechSideNav libraries={props.libraries} />
+        <NTKSpeechWorkArea>
+          <NTKSpeechToolbar playState={playState}></NTKSpeechToolbar>
+          <NTKSpeechTextarea {...props}></NTKSpeechTextarea>
+        </NTKSpeechWorkArea>
+      </NTKVerboseContainer>
       ): <LoginPanel onSignIn={props.onOpenSignInDlg} onSignUp={props.onOpenSignUpDlg} />}
-    </PanelContainer>
+    </NTKPanelContainer>
   );
 };
+
+export default NTKSpeechPanel;

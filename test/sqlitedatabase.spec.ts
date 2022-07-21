@@ -48,15 +48,29 @@ describe("SqliteDatabase - tests", () => {
     if (!existed) {
       await database.addUser("test", "123@456.com", "123456", "salttemp", "+=-", "1.1");
     }
-    let record = await database.addSpeechLibrary("2022-6-27", "placeholder", "test", "{\"speed\": 1}");
-    assert(record.id >= 0);
-    record = await database.addSpeechLibrary("2022-6-28", "placeholder", "test", "{\"speed\": 1}");
-    assert(record.id >= 0);
+    let record1 = await database.addSpeechLibrary("2022-6-27", "placeholder", "test", "{\"speed\": 1}");
+    assert(record1.id >= 0);
+    let record2 = await database.addSpeechLibrary("2022-6-28", "placeholder", "test", "{\"speed\": 1}");
+    assert(record2.id >= 0);
     let records = await database.getSpeechLibraries("test");
     assert(records.length === 2);
-    const res = await database.removeSpeechLibrary(record.id);
+    let res = await database.removeSpeechLibrary(record2.id);
+    assert(res);
     records = await database.getSpeechLibraries("test");
     assert(records.length === 1);
+    res = await database.removeSpeechLibrary(record1.id);
     assert(res);
+    records = await database.getSpeechLibraries("test");
+    assert(records.length === 0);
+  });
+  it("should test to update an existed library", async () => {
+    let existed = await database.isUserExisted("test");
+    if (!existed) {
+      await database.addUser("test", "123@456.com", "123456", "salttemp", "+=-", "1.1");
+    }
+    let record1 = await database.addSpeechLibrary("2022-6-27", "placeholder", "test", "{\"speed\": 1}");
+    assert(record1.id >= 0);
+    let res = await database.updateSpeechLibrary(record1.id, "2022-6-27", "balahbalah", "test", "{}");
+    assert(res !== undefined);
   });
 });
