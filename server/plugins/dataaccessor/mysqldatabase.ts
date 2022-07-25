@@ -3,7 +3,7 @@ var mysql = require('mysql');
 var strftime = require('strftime');
 
 import { DatabaseUnconnectedError } from "../datatypes/errors";
-import { IDatabase, IUserRecord, IMemoRecord, ISpeechLibraryRecord } from "./datainterfaces";
+import { IDatabase, IUserRecord, IMemoRecord, ISpeechLibraryRecord, emptySpeechLibrary } from "./datainterfaces";
 
 /// const passphrase = "SIMPLEPHRASEBAR";
 
@@ -394,6 +394,24 @@ class MysqlDatabase implements IDatabase {
       } catch (err) {
         throw err;
       }
+    }
+    getSpeechLibrary(id: number): Promise<ISpeechLibraryRecord> {
+      if (!this.isConnected()) {
+        throw new DatabaseUnconnectedError();
+      }
+      return new Promise((resolve, reject) => {
+        this.pool.query("select id, name, content, configuration from SpeechLibraries where id=?", [id], (err, result) => {
+          if (err) {
+            reject(err);
+            return;
+          }
+          if (!result) {
+            resolve(emptySpeechLibrary);
+            return;
+          }
+          resolve(result);
+        });
+      });
     }
     getSpeechLibraries(user: string): Promise<Array<ISpeechLibraryRecord>> {
       if (!this.isConnected()) {

@@ -3,8 +3,9 @@ import { useEffect } from "react";
 import { connect, useDispatch, useSelector } from "react-redux";
 import { setSpeechText } from "../actions";
 import { RootState } from "../dataprovider/data-types";
+import utils from "../utils/utils";
 import NTKSpeechPanel, { NTKSpeechPanelProps } from "./SpeechPanel";
-import { addLibrary, getLibraries, SpeechState } from "./SpeechSlice";
+import { addLibraryAsCurrent, getLibraries, getLibraryForCurLibraryNode, setCurrentLibraryNode, SpeechState, updateCurrentLibrary } from "./SpeechSlice";
 
 interface OwnProps {
   isLoggedIn: boolean;
@@ -61,13 +62,27 @@ const NTKSpeechPanelWrapper: React.FC<NTKSpeechPanelProps> = (props: NTKSpeechPa
 
   function onTextChange(text: string) {
     if (!curNode) {
-      dispatch(addLibrary({name: "", content: text, configuration: "{}"}));
+      dispatch(addLibraryAsCurrent({name: "", content: text, configuration: "{}"}));
+    } else {
+      dispatch(updateCurrentLibrary({id: parseInt(curNode.libraryId), content: text,
+        name: curNode.name, configuration: curNode.configuration}));
+    }
+  }
+  function onNodeSelect(nodeIds: string) {
+    if (nodeIds.length === 0) {
+      setCurrentLibraryNode(undefined);
+    }
+    const nodeId = nodeIds;
+    const libraryId = utils.getLibraryNodeIdFromTreeNodeId(nodeId);
+    dispatch(setCurrentLibraryNode(utils.getCurrentLibraryNodeByLibraryNodeId(libraryId, libs)));
+    if (libraryId.libraryId) {
+      dispatch(getLibraryForCurLibraryNode(libraryId.libraryId));
     }
   }
 
   const libs = [...libraries];
   return (
-    <NTKSpeechPanel {...props} onTextChanged={onTextChange} libraries={libs}></NTKSpeechPanel>
+    <NTKSpeechPanel {...props} onNodeSelect={onNodeSelect} onTextChanged={onTextChange} curLibraryNode={curNode} libraries={libs}></NTKSpeechPanel>
   );
 };
 

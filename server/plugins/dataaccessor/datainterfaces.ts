@@ -49,6 +49,7 @@ export interface IDatabase {
     updateSpeechLibrary(id: number, name: string, content: string, user: string, configuration: string): Promise<ISpeechLibraryRecord>;
     removeSpeechLibrary(id: number): Promise<boolean>;
     getSpeechLibraries(user: string): Promise<Array<ISpeechLibraryRecord>>;
+    getSpeechLibrary(id: number): Promise<ISpeechLibraryRecord>;
 }
 
 export interface IDatabaseAccessor {
@@ -71,6 +72,7 @@ export interface IDatabaseAccessor {
     updateSpeechLibrary(id: number, name: string, content: string, user: string, configuration: string): Promise<ISpeechLibraryRecord>;
     removeSpeechLibrary(id: number): Promise<boolean>;
     getSpeechLibraries(user: string): Promise<Array<ISpeechLibraryRecord>>;
+    getSpeechLibrary(id: number): Promise<ISpeechLibraryRecord>;
 }
 export const emptyUser: IUserRecord = {id: -1, name: "", password: "", pwdsalt: "", delimiter: "", version: ""};
 export const emptyMemo: IMemoRecord = {id: -1, uid: -1, notebook: "", note: "", memo: "", createdTime: "1970-01-01", modifiedTime: "1970-01-01"};

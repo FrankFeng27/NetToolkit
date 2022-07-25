@@ -22,7 +22,7 @@ interface NTKSpeechTextAreaProps {
 }
 
 export const NTKSpeechTextarea: React.FC<NTKSpeechTextAreaProps> = (props: NTKSpeechTextAreaProps) => {
-  const text = props.text ?? "";
+  const text = props.text ? props.text.slice() : "";
   function onTextChanged(e: React.ChangeEvent<HTMLTextAreaElement>) {
     if (!e.target || !e.target.value) {
       return;
@@ -32,9 +32,14 @@ export const NTKSpeechTextarea: React.FC<NTKSpeechTextAreaProps> = (props: NTKSp
     }
     /// getGlobalData().currentSpeechText = e.target.value;
   }
+  console.log(`text is ${text}`);
   return (
     <TextAreaContainer>
-      <TextArea onChange={onTextChanged} placeholder="Type here ...">{text}</TextArea>
+    {
+      text.length > 0 ?
+      (<TextArea onChange={onTextChanged}>{text}</TextArea>)
+      : (<TextArea onChange={onTextChanged} placeholder="type here..."></TextArea>)
+    }
     </TextAreaContainer>
   );
 };

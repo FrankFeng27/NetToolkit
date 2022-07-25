@@ -34,6 +34,11 @@ export interface SpeechLibraryTreeNode {
   configuration?: string;
 }
 
+export interface CurrentSpeechLibraryNodeId {
+  name?: string;
+  libraryId?: string;
+}
+
 export interface RootState {
   speeches: SpeechState;
 }

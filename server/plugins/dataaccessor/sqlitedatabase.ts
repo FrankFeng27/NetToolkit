@@ -4,7 +4,7 @@ import { open, Database } from "sqlite";
 import * as path from "path";
 var strftime = require('strftime');
 import { DatabaseUnconnectedError, InvalidUserNameError } from "../datatypes/errors";
-import { IDatabase, IUserRecord, IMemoRecord, ISpeechLibraryRecord, emptyUser, emptyMemo} from "./datainterfaces";
+import { IDatabase, IUserRecord, IMemoRecord, ISpeechLibraryRecord, emptyUser, emptyMemo, emptySpeechLibrary} from "./datainterfaces";
 
 class SqliteDatabase implements IDatabase {
     private db: Database | undefined;
@@ -105,7 +105,7 @@ class SqliteDatabase implements IDatabase {
         foreign key (uid)
         references UserTable(id) on delete cascade,
         foreign key (tempLibraryId) 
-        references TemporaryLibraries(id)
+        references SpeechTemporaryLibraries(id)
       )`);
     }
     async dropSpeechTables(): Promise<void> {
@@ -343,11 +343,21 @@ class SqliteDatabase implements IDatabase {
       res.forEach(record => (arr.push({
         id: record.id,
         name: record.name,
-        content: "",
+        content: record.content,
         configuration: "",
         userName: user
       })));
       return arr;
+    }
+    async getSpeechLibrary(id: number): Promise<ISpeechLibraryRecord> {
+      if (!this.isConnected()) {
+        throw new DatabaseUnconnectedError();
+      }
+      const res = await this.db.get("select id, name, content, configuration from SpeechLibraries where id=?", [id]);
+      if (!res) {
+        return emptySpeechLibrary;
+      }
+      return res;
     }
     private async get_user_id(user: string): Promise<number> {
       if (!this.isConnected()) {

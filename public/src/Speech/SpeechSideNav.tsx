@@ -4,6 +4,7 @@ import { ExpandMore as ExpandMoreIcon, ChevronRight as ChevronRightIcon} from "@
 import { styled as muiStyled } from "@material-ui/core/styles";
 import { TreeView, TreeItem, treeItemClasses } from "@material-ui/lab";
 import { SpeechLibraryItem, SpeechLibraryTreeNode } from "../dataprovider/data-types";
+import utils from "../utils/utils";
 
 const SideNavbarContainer = styled.div`
   width: 120px;
@@ -102,38 +103,47 @@ const createLibraryTree = (libs?: SpeechLibraryItem[]): SpeechLibraryTreeNode[] 
 }
 
 const createLibraryWidget = (node: SpeechLibraryTreeNode) => {
-  const id = node.libraryId ? `node-${node.libraryId}` : `node-${node.name}`;
+  const id = utils.buildTreeItemId(node);
   return (<StyledTreeItemRoot key={id} nodeId={id} label={node.displayName}>
     {(node.children && node.children.length > 0) ? node.children.map(n => createLibraryWidget(n)) : null}
   </StyledTreeItemRoot>)
 };
 
-const createLibraryWidgets = (libs?: SpeechLibraryItem[]) => {
-  const arr = createLibraryTree(libs);
-  return (<LibraryTreeContainer>
-    <LibrariesLabel>Libraries</LibrariesLabel>
-    <TreeView
-      aria-label="rich object"
-      defaultCollapseIcon={<ExpandMoreIcon />}
-      defaultExpanded={['root']}
-      defaultExpandIcon={<ChevronRightIcon />}
-      sx={{ fontSize: 'inherit', minHeight: 110, flexGrow: 1, maxWidth: 400, overflowY: 'auto', overflowX: 'clip' }}
-    >
-    {(arr && arr.length > 0) ? arr.map(n => (createLibraryWidget(n))) : null}
-    </TreeView>
-  </LibraryTreeContainer>);
-};
+
 
 export interface NTKSpeechSideNavProps {
   libraries?: SpeechLibraryItem[];
+  curLibraryNode?: SpeechLibraryTreeNode;
+  onNodeSelect: (nodeIds: string) => void;
 }
 
 export const NTKSpeechSideNav: React.FC<NTKSpeechSideNavProps> = (props: NTKSpeechSideNavProps) => {
+  function onNodeSelect(_event: React.SyntheticEvent, nodeIds: string) {
+    props.onNodeSelect(nodeIds);
+  }
+  const createLibraryWidgets = (libs?: SpeechLibraryItem[], curLibraryNode?: SpeechLibraryTreeNode) => {
+    const arr = createLibraryTree(libs);
+    const selected = curLibraryNode ? utils.buildTreeItemId(curLibraryNode) : undefined;
+    return (<LibraryTreeContainer>
+      <LibrariesLabel>Libraries</LibrariesLabel>
+      <TreeView
+        aria-label="rich object"
+        defaultCollapseIcon={<ExpandMoreIcon />}
+        defaultExpanded={['root']}
+        defaultExpandIcon={<ChevronRightIcon />}
+        selected={selected}
+        onNodeSelect={onNodeSelect}
+        sx={{ fontSize: 'inherit', minHeight: 110, flexGrow: 1, maxWidth: 400, overflowY: 'auto', overflowX: 'clip' }}
+      >
+      {(arr && arr.length > 0) ? arr.map(n => (createLibraryWidget(n))) : null}
+      </TreeView>
+    </LibraryTreeContainer>);
+  };
   return (
     <SideNavbarContainer>
       <SideNavItem>Add Library ...</SideNavItem>
       <SideNavItem>
-        {createLibraryWidgets(props.libraries)}
+        {createLibraryWidgets(props.libraries, props.curLibraryNode)}
       </SideNavItem>
     </SideNavbarContainer>
   );

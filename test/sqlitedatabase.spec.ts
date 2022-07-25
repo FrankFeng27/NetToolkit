@@ -72,5 +72,7 @@ describe("SqliteDatabase - tests", () => {
     assert(record1.id >= 0);
     let res = await database.updateSpeechLibrary(record1.id, "2022-6-27", "balahbalah", "test", "{}");
     assert(res !== undefined);
+    res = await database.getSpeechLibrary(record1.id);
+    assert(res.content === "balahbalah");
   });
 });
