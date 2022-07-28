@@ -1,7 +1,8 @@
 import { createAsyncThunk, createEntityAdapter, createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { SpeechLibraryItem, SpeechLibraryTreeNode } from "../dataprovider/data-types";
+import { CurrentSpeechLibrary, SpeechLibraryItem, SpeechLibraryTreeNode } from "../dataprovider/data-types";
 import { DataAccessor } from "../dataprovider/dataprovider";
 import utils from "../utils/utils";
+import { getSpeechLibaryDisplayName } from "./SpeechUtils";
 
 export const removeLibrary = createAsyncThunk(
   "speeches/removeLibrary", 
@@ -51,7 +52,7 @@ export interface SpeechState {
   status: StatusEnum;
   libraries: SpeechLibraryItem[];
   libraryTree?: SpeechLibraryTreeNode;
-  currentLibraryNode?: SpeechLibraryTreeNode;
+  currentLibraryNode?: CurrentSpeechLibrary;
 }
 
 /// const adapter = createEntityAdapter();
@@ -94,7 +95,7 @@ const slice = createSlice({
       state.libraries = action.payload.libraries;
       const curLib = action.payload.curLibrary;
       state.currentLibraryNode = {
-        libraryId: curLib.id, name: curLib.name, displayName: utils.getSpeechLibaryDisplayName(curLib.name)
+        libraryId: curLib.id, name: curLib.name, displayName: getSpeechLibaryDisplayName(curLib.name)
       };
     })
     .addCase(getLibraries.pending, (state, _action) => {
@@ -110,7 +111,7 @@ const slice = createSlice({
     .addCase(updateCurrentLibrary.fulfilled, (state, action) => {
       state.status = "idle";
       const lib = action.payload;
-      state.currentLibraryNode = {libraryId: lib.id.toString(), ...lib, displayName: utils.getSpeechLibaryDisplayName(lib.name)};
+      state.currentLibraryNode = {libraryId: lib.id.toString(), ...lib, displayName: getSpeechLibaryDisplayName(lib.name)};
     })
     .addCase(updateCurrentLibrary.rejected, (state, _action) => {
       state.status = "rejected";

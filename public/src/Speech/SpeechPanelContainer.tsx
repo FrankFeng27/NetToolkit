@@ -3,9 +3,9 @@ import { useEffect } from "react";
 import { connect, useDispatch, useSelector } from "react-redux";
 import { setSpeechText } from "../actions";
 import { RootState } from "../dataprovider/data-types";
-import utils from "../utils/utils";
 import NTKSpeechPanel, { NTKSpeechPanelProps } from "./SpeechPanel";
 import { addLibraryAsCurrent, getLibraries, getLibraryForCurLibraryNode, setCurrentLibraryNode, SpeechState, updateCurrentLibrary } from "./SpeechSlice";
+import { getCurrentLibraryNodeByLibraryNodeId, getLibraryNodeIdFromTreeNodeId } from "./SpeechUtils";
 
 interface OwnProps {
   isLoggedIn: boolean;
@@ -73,8 +73,8 @@ const NTKSpeechPanelWrapper: React.FC<NTKSpeechPanelProps> = (props: NTKSpeechPa
       setCurrentLibraryNode(undefined);
     }
     const nodeId = nodeIds;
-    const libraryId = utils.getLibraryNodeIdFromTreeNodeId(nodeId);
-    dispatch(setCurrentLibraryNode(utils.getCurrentLibraryNodeByLibraryNodeId(libraryId, libs)));
+    const libraryId = getLibraryNodeIdFromTreeNodeId(nodeId);
+    dispatch(setCurrentLibraryNode(getCurrentLibraryNodeByLibraryNodeId(libraryId, libs)));
     if (libraryId.libraryId) {
       dispatch(getLibraryForCurLibraryNode(libraryId.libraryId));
     }

@@ -32,7 +32,7 @@ export const NTKSpeechToolbar: React.FC<NTKSpeechToolbarProps> = (props: NTKSpee
     <SpeechToolbarContainer>
       <SpeechToolItem><SpeechToolButton>Backward</SpeechToolButton></SpeechToolItem>
       {props.playState === SpeechPlayState.kPlaying ? <SpeechToolItem onClick={props.onPause}>Pause</SpeechToolItem>
-      : <SpeechToolItem onClick={props.onPlay}>Play</SpeechToolItem>}
+      : <SpeechToolItem><SpeechToolButton onClick={props.onPlay}>Play</SpeechToolButton></SpeechToolItem>}
       <SpeechToolItem><SpeechToolButton>Forward</SpeechToolButton></SpeechToolItem>
     </SpeechToolbarContainer>
   )

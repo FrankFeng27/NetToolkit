@@ -1,14 +1,15 @@
 import * as React from "react";
 import styled from "styled-components";
 import { ExpandMore as ExpandMoreIcon, ChevronRight as ChevronRightIcon} from "@material-ui/icons";
+import { Button } from "@material-ui/core";
 import { styled as muiStyled } from "@material-ui/core/styles";
 import { TreeView, TreeItem, treeItemClasses } from "@material-ui/lab";
-import { SpeechLibraryItem, SpeechLibraryTreeNode } from "../dataprovider/data-types";
-import utils from "../utils/utils";
+import { CurrentSpeechLibrary, SpeechLibraryItem, SpeechLibraryTreeNode } from "../dataprovider/data-types";
+import { buildTreeItemId, getLibraryNodeIdFromTreeNodeId } from "./SpeechUtils";
 
 const SideNavbarContainer = styled.div`
-  width: 120px;
-  min-width: 120px;
+  width: 180px;
+  min-width: 180px;
   flex-grow: 0;
   display:flex;
   flex-direction: column;
@@ -39,6 +40,10 @@ const StyledTreeItemRoot = muiStyled(TreeItem)(( {theme} ) => ({
     fontSize: 12,
   }
 }));
+
+const StyledButton = muiStyled(Button)({
+  fontSize: 12
+});
 
 
 const createLibraryTreePathNode = (arr: SpeechLibraryTreeNode[], paths: string[]): SpeechLibraryTreeNode[] => {
@@ -103,7 +108,7 @@ const createLibraryTree = (libs?: SpeechLibraryItem[]): SpeechLibraryTreeNode[] 
 }
 
 const createLibraryWidget = (node: SpeechLibraryTreeNode) => {
-  const id = utils.buildTreeItemId(node);
+  const id = buildTreeItemId(node);
   return (<StyledTreeItemRoot key={id} nodeId={id} label={node.displayName}>
     {(node.children && node.children.length > 0) ? node.children.map(n => createLibraryWidget(n)) : null}
   </StyledTreeItemRoot>)
@@ -113,23 +118,27 @@ const createLibraryWidget = (node: SpeechLibraryTreeNode) => {
 
 export interface NTKSpeechSideNavProps {
   libraries?: SpeechLibraryItem[];
-  curLibraryNode?: SpeechLibraryTreeNode;
+  curLibraryNode?: CurrentSpeechLibrary;
   onNodeSelect: (nodeIds: string) => void;
 }
 
 export const NTKSpeechSideNav: React.FC<NTKSpeechSideNavProps> = (props: NTKSpeechSideNavProps) => {
   function onNodeSelect(_event: React.SyntheticEvent, nodeIds: string) {
+    if (props.curLibraryNode) {
+      // check if we need to switch current node
+      const speechId = getLibraryNodeIdFromTreeNodeId(nodeIds);
+      if (props.curLibraryNode.libraryId && props.curLibraryNode.libraryId === speechId.libraryId) {}
+    }
     props.onNodeSelect(nodeIds);
   }
-  const createLibraryWidgets = (libs?: SpeechLibraryItem[], curLibraryNode?: SpeechLibraryTreeNode) => {
+  const createLibraryWidgets = (libs?: SpeechLibraryItem[], curLibraryNode?: CurrentSpeechLibrary) => {
     const arr = createLibraryTree(libs);
-    const selected = curLibraryNode ? utils.buildTreeItemId(curLibraryNode) : undefined;
+    const selected = curLibraryNode ? buildTreeItemId(curLibraryNode) : undefined;
     return (<LibraryTreeContainer>
       <LibrariesLabel>Libraries</LibrariesLabel>
       <TreeView
         aria-label="rich object"
         defaultCollapseIcon={<ExpandMoreIcon />}
-        defaultExpanded={['root']}
         defaultExpandIcon={<ChevronRightIcon />}
         selected={selected}
         onNodeSelect={onNodeSelect}
@@ -141,7 +150,7 @@ export const NTKSpeechSideNav: React.FC<NTKSpeechSideNavProps> = (props: NTKSpee
   };
   return (
     <SideNavbarContainer>
-      <SideNavItem>Add Library ...</SideNavItem>
+      <SideNavItem><StyledButton>Add Library ...</StyledButton></SideNavItem>
       <SideNavItem>
         {createLibraryWidgets(props.libraries, props.curLibraryNode)}
       </SideNavItem>

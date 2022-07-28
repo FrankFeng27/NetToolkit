@@ -42,3 +42,10 @@ export interface CurrentSpeechLibraryNodeId {
 export interface RootState {
   speeches: SpeechState;
 }
+export interface CurrentSpeechLibrary {
+  libraryId?: string;
+  name: string;
+  displayName?: string;
+  content?: string;
+  configuration?: string;
+}
