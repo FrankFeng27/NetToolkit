@@ -2,6 +2,7 @@ node_modules/
 *.log
 logs/
 public/dist/
+storybook-static/
 package-lock.json
 *.7z
 *.zip

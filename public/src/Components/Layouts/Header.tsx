@@ -12,15 +12,10 @@ import {
 import MenuIcon from "@material-ui/icons/Menu";
 import { styled } from "@material-ui/core/styles";
 
-import { DataAccessor, ErrorStatus } from "../../dataprovider/dataprovider";
+import { DataAccessor } from "../../dataprovider/dataprovider";
 import { DRAWER_WIDTH } from "../../utils/constants";
 import { LogInTypeEnum } from "../../dataprovider/data-types";
 import LoginDialog, { IFormInput } from "../Widgets/LoginDialog";
-import CurrentContext from "../CurrentContext";
-
-const RootContainer = styled('div')`
-  flex-grow: 1;
-`;
 
 interface AppBarProps extends MuiAppBarProps {
   open: boolean;
@@ -66,11 +61,6 @@ export interface HeaderbarProps {
   onOpenSignUpDlg: () => void;
   onCancelSignInUpDlg: () => void;
   setIsLoggedIn: (v: boolean) => void;
-}
-
-interface HeaderbarState {
-  loggedIn: boolean;
-  anchorElement: EventTarget | HTMLElement | null;
 }
 
 const Headerbar: React.FC<HeaderbarProps> = (props: HeaderbarProps) => {

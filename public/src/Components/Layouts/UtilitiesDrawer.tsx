@@ -18,7 +18,6 @@ import FileCopyIcon from '@material-ui/icons/FileCopy';
 import OtherHousesIcon from '@material-ui/icons/OtherHouses';
 
 import { DRAWER_WIDTH } from "../../utils/constants";
-import PanelContainer from "./PanelContainer";
 
 const drawerWidth = DRAWER_WIDTH;
 
