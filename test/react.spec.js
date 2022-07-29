@@ -1,5 +1,5 @@
 
-var Theme = require('@material-ui/core/styles').Theme;
+var Theme = require('@mui/material/styles').Theme;
 var assert = require('assert');
 
 describe('material-ui', () => {
