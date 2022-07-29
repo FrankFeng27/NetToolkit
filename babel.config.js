@@ -3,7 +3,7 @@ module.exports = function (api) {
 
   return {
     "presets": [
-      ["@babel/env", { "targets": "> 0.25%", "useBuiltIns": "usage" }],
+      ["@babel/env", { "targets": "> 0.25%", "useBuiltIns": "usage", "corejs": "3.24.0" }],
       "@babel/preset-react",
       ["@babel/preset-typescript", { "allExtensions": true, "isTSX": true }],
 
