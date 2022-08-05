@@ -1,3 +1,4 @@
+import { LoginState } from "../LoginDialog/LoginSlice";
 import { SpeechState } from "../Speech/SpeechSlice";
 
 export interface PanelRouteProps {
@@ -41,6 +42,7 @@ export interface CurrentSpeechLibraryNodeId {
 
 export interface RootState {
   speeches: SpeechState;
+  login: LoginState;
 }
 export interface CurrentSpeechLibrary {
   libraryId?: string;

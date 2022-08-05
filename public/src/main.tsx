@@ -1,18 +1,20 @@
 
 import { configureStore } from "@reduxjs/toolkit";
 import * as React from "react";
-import ReactDOM from "react-dom";
+import { render } from "react-dom";
+import { createRoot } from "react-dom/client";
 import {Provider} from "react-redux";
 import { Application as App } from "./App"
-// import reducer from "./reducer";
+import reducer from "./reducer/reducer";
 
-const store = configureStore({reducer: {}}); // configureStore({reducer})
+const store = configureStore({reducer}); // configureStore({reducer})
 
 const rootElement = document.getElementById('root');
-ReactDOM.render(
+const root = createRoot(rootElement);
+root.render(
   <Provider store={store}>
       <App/>
-  </Provider>, rootElement
+  </Provider>
 );
 
 
