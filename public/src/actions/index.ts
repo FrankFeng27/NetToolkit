@@ -53,10 +53,6 @@ export const setLoggedOut = () => ({
 export const setLoggedUp = () => ({
     type: "LOGIN_LOGGEDUP",
 });
-export const setOpenLoginDialog = (open: LogInTypeEnum) => ({
-    type: "LOGIN_OPENDIALOG",
-    open
-});
 export const setSpeechText = (text: string) => ({
   type: "SPEECH_SET_TEXT",
   load: text

@@ -1,6 +1,6 @@
 
 import * as React from "react";
-import { Router, Route, BrowserRouter, Routes } from "react-router-dom";
+import { Route, BrowserRouter, Routes } from "react-router-dom";
 import { createBrowserHistory } from "history";
 import { styled } from "@mui/material/styles";
 
@@ -11,6 +11,8 @@ import { styled } from "@mui/material/styles";
 import UtilitiesHeaderbar from "./UtilitiesHeader";
 import CurrentContext from "../CurrentContext";
 import UtilitiesDrawer from "./UtilitiesDrawer";
+import WatermarkPanelRoute from "./WatermarkPanelRoute";
+import SpeechPanelRoute from "./SpeechPanelRoute";
 /// import SpeechPanelRoute from "./SpeechPanelRoute";
 
 const StyledHeaderbarContainer = styled('div')`
@@ -61,9 +63,9 @@ const UtilitiesLayout: React.FC = () => {
         onDrawerClose={handleUtilitiesDrawerClose}
         />
         <Routes>
-          <Route path="/"></Route>
+          <Route path="/" element={<WatermarkPanelRoute openDrawer={openDrawer}/>}></Route>
           <Route path="/notebooks"></Route>
-          <Route path="/speeches"></Route>
+          <Route path="/speeches" element={<SpeechPanelRoute openDrawer={openDrawer} />}></Route>
         </Routes>
       </BrowserRouter>
     </div>

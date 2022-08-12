@@ -1,24 +1,9 @@
 import * as React from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { setOpenLoginDialog } from "../actions";
-import CurrentContext from "../CurrentContext";
 import { LogInTypeEnum, RootState } from "../dataprovider/data-types";
 import { DataAccessor } from "../dataprovider/dataprovider";
 import LoginDialog, { ISigInUpData } from "./LoginDialog";
-
-import {LoginState } from "./LoginSlice";
-
-interface OwnProps {
-  setIsLoggedIn: (v: boolean) => void;
-}
-
-const mapStateToProps = (state: LoginState) => ({
-  openType: state.loginDlgType
-});
-
-const mapDispatchToProps = (dispatch) => ({
-  onClose: () => dispatch(setOpenLoginDialog(LogInTypeEnum.Hide)),
-});
+import { openLoginDialog } from "./LoginSlice";
 
 interface NTKLoginDialogWrapperProps {
   setIsLoggedIn: (v: boolean) => void;
@@ -26,6 +11,7 @@ interface NTKLoginDialogWrapperProps {
 
 const NTKLoginDialogWrapper: React.FC<NTKLoginDialogWrapperProps> = (props: NTKLoginDialogWrapperProps) => {
   const { loginDlgType } = useSelector((state: RootState) => (state.login));
+  const dispatch = useDispatch();
  
   async function submitSignInData(data: ISigInUpData): Promise<boolean> {
     try {
@@ -56,11 +42,15 @@ const NTKLoginDialogWrapper: React.FC<NTKLoginDialogWrapperProps> = (props: NTKL
         return false;
       }
   }
+  function closeDialog() {
+    dispatch(openLoginDialog(LogInTypeEnum.Hide));
+  }
   return (
     <LoginDialog 
      openType={loginDlgType}
      onSubmitSignIn={submitSignInData}
      onSubmitSignUp={submitSignUpData}
+     onCloseDialog={closeDialog}
     ></LoginDialog>
   );
 };

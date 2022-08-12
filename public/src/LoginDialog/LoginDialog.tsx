@@ -33,11 +33,12 @@ interface ILoginDialogProps {
   openType: LogInTypeEnum;
   onSubmitSignIn?: (data: ISigInUpData) => Promise<boolean>;
   onSubmitSignUp?: (data: ISigInUpData) => Promise<boolean>;
+  onCloseDialog: () => void;
 }
 
 const LoginDialog: React.FC<ILoginDialogProps> = (props: ILoginDialogProps) => {
   const { register, handleSubmit } = useForm<ISigInUpData>();
-  const [ dlgType, setDlgType ] = React.useState<LogInTypeEnum>(props.openType);
+  const dlgType = props.openType;
   
   function onSubmitSignInData(data: ISigInUpData) {
     onCancelDialog();
@@ -53,7 +54,7 @@ const LoginDialog: React.FC<ILoginDialogProps> = (props: ILoginDialogProps) => {
   }
 
   function onCancelDialog() {
-    setDlgType(LogInTypeEnum.Hide);
+    props.onCloseDialog();
   }
   if (dlgType === LogInTypeEnum.Hide) {
     return (<Dialog open={false} />);
