@@ -1,7 +1,6 @@
 
 import { configureStore } from "@reduxjs/toolkit";
 import * as React from "react";
-import { render } from "react-dom";
 import { createRoot } from "react-dom/client";
 import {Provider} from "react-redux";
 import { Application as App } from "./App"
