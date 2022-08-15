@@ -4,7 +4,8 @@ import { styled as muiStyled } from "@mui/material";
 import { TreeItem, treeItemClasses, TreeItemProps } from "@mui/lab";
 import { CurrentSpeechLibraryNodeId } from "../dataprovider/data-types";
 import { TreeItemContentComponent } from "./TreeItemContentComponent";
-import { getTreeItemIdByNodeId } from "./SpeechUtils";
+import { buildTreeItemIdByNodeId } from "./SpeechUtils";
+import { PropaneSharp } from "@mui/icons-material";
 
 const StyledTreeItemRoot = muiStyled(TreeItem)(( {theme} ) => ({
   [`.${treeItemClasses.content} .${treeItemClasses.label}`]: {
@@ -32,8 +33,9 @@ export const SpeechLibraryTreeItem: React.FC<SpeechLibraryTreeItemProps> = (
   function onLabelChanged(value: string) {
     props.onLabelTextChanged(props.nodeId, value);
   }
-  const id = getTreeItemIdByNodeId(props.nodeId);
-  const currentId = getTreeItemIdByNodeId(props.curNodeId);
+
+  const id = buildTreeItemIdByNodeId(props.nodeId);
+  const currentId = props.curNodeId ? buildTreeItemIdByNodeId(props.curNodeId) : "";
   const labelText = props.label;
   return (
     <StyledTreeItemRoot
@@ -41,6 +43,7 @@ export const SpeechLibraryTreeItem: React.FC<SpeechLibraryTreeItemProps> = (
     nodeId={id}
     ContentComponent={TreeItemContentComponent}
     ContentProps={{labelText, id, currentId, onLabelChanged} as any}
+    children={props.children}
     />
   );
 }

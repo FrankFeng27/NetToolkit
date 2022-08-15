@@ -4,7 +4,7 @@ import { TreeView, TreeItem, treeItemClasses } from "@mui/lab";
 import { styled as muiStyled } from "@mui/material";
 import { ChevronRight, ExpandMore } from "@mui/icons-material";
 import { CurrentSpeechLibrary, CurrentSpeechLibraryNodeId, SpeechLibraryItem, SpeechLibraryTreeNode } from "../dataprovider/data-types";
-import { buildTreeItemId, createLibraryTree, getLibraryNodeIdFromCurrentLibrary, getLibraryNodeIdFromTreeNode, getLibraryNodeIdFromTreeNodeId } from "./SpeechUtils";
+import { areCurrentLibraryNodeIdsEqual, buildTreeItemId, buildTreeItemIdByNodeId, createLibraryTree, getLibraryNodeIdFromCurrentLibrary, getLibraryNodeIdFromTreeNode, getLibraryNodeIdFromTreeNodeId } from "./SpeechUtils";
 import { SpeechLibraryTreeItem } from "./SpeechLibraryTreeItem";
 
 const LibraryTreeContainer = styled.div`
@@ -19,17 +19,17 @@ const LibrariesLabel = styled.div`
 export interface SpeechLibraryTreeProps {
   onNodeSelect: (nodeIds: string) => void;
   libraries?: SpeechLibraryItem[];
-  curLibraryNode?: CurrentSpeechLibrary;
+  curLibraryNodeId?: CurrentSpeechLibraryNodeId;
   onNodeRename: (nodeId: CurrentSpeechLibraryNodeId, newName: string) => void;
   onNodeRemove: (nodeId: CurrentSpeechLibraryNodeId) => void;
 }
 
 export const SpeechLibraryTree: React.FC<SpeechLibraryTreeProps> = (props: SpeechLibraryTreeProps) => {
   function onNodeSelect(_event: React.SyntheticEvent, nodeIds: string) {
-    if (props.curLibraryNode) {
+    if (props.curLibraryNodeId) {
       // check if we need to switch current node
       const speechId = getLibraryNodeIdFromTreeNodeId(nodeIds);
-      if (props.curLibraryNode.libraryId && props.curLibraryNode.libraryId === speechId.libraryId) {}
+      if (areCurrentLibraryNodeIdsEqual(speechId, props.curLibraryNodeId)) {}
     }
     props.onNodeSelect(nodeIds);
   }
@@ -38,14 +38,15 @@ export const SpeechLibraryTree: React.FC<SpeechLibraryTreeProps> = (props: Speec
   }
   const createLibraryWidget = (node: SpeechLibraryTreeNode, curNodeId: CurrentSpeechLibraryNodeId) => {
     const id = getLibraryNodeIdFromTreeNode(node);
-    return (<SpeechLibraryTreeItem onLabelTextChanged={onLabelTextChanged} curNodeId={curNodeId} nodeId={id} label={node.displayName}>
-      {(node.children && node.children.length > 0) ? node.children.map(n => createLibraryWidget(n, curNodeId)) : null}
+    const children = ((node.children && node.children.length > 0) ? node.children.map(n => createLibraryWidget(n, curNodeId)) : undefined);
+    return  (<SpeechLibraryTreeItem onLabelTextChanged={onLabelTextChanged} curNodeId={curNodeId} nodeId={id} label={node.displayName}>
+      {children}
     </SpeechLibraryTreeItem>)
   };
-  const createLibraryWidgets = (libs?: SpeechLibraryItem[], curLibraryNode?: CurrentSpeechLibrary) => {
+  const createLibraryWidgets = (libs?: SpeechLibraryItem[]) => {
     const tree = createLibraryTree(libs);
-    const selected = curLibraryNode ? buildTreeItemId(curLibraryNode) : undefined;
-    const curNodeId = getLibraryNodeIdFromCurrentLibrary(props.curLibraryNode);
+    const selected = props.curLibraryNodeId ? buildTreeItemIdByNodeId(props.curLibraryNodeId) : undefined;
+    const curNodeId = (props.curLibraryNodeId);
     return (<LibraryTreeContainer>
       <LibrariesLabel>Libraries</LibrariesLabel>
       <TreeView
@@ -61,7 +62,5 @@ export const SpeechLibraryTree: React.FC<SpeechLibraryTreeProps> = (props: Speec
     </LibraryTreeContainer>)
   };
 
-  return (
-    <TreeView></TreeView>
-  )
+  return (createLibraryWidgets(props.libraries));
 };
