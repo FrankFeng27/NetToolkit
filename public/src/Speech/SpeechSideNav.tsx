@@ -1,8 +1,8 @@
 import * as React from "react";
 import styled from "styled-components";
-import { ExpandMore as ExpandMoreIcon, ChevronRight as ChevronRightIcon} from "@material-ui/icons";
-import { styled as muiStyled } from "@material-ui/core/styles";
-import { TreeView, TreeItem, treeItemClasses } from "@material-ui/lab";
+import { ExpandMore as ExpandMoreIcon, ChevronRight as ChevronRightIcon} from "@mui/icons-material";
+import { styled as muiStyled } from "@mui/material/styles";
+import { TreeView, TreeItem, treeItemClasses } from "@mui/lab";
 import { SpeechLibraryItem, SpeechLibraryTreeNode } from "../dataprovider/data-types";
 
 const SideNavbarContainer = styled.div`

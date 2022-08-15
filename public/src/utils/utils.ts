@@ -33,7 +33,6 @@ class utils {
         }
         return Number(n);
     }
-
 }
 
 export default utils;

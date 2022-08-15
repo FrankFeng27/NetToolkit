@@ -52,6 +52,10 @@ export class DataAccessor {
     static async updateSpeechLibrary(id: string, name: string, content: string, configuration: string) {
       const res = await axios.post('/api/v1/speechLibrary', {id, name, content, configuration});
     }
+    static async getSpeechLibrary(libraryId: string): Promise<any> {
+        const res = await axios.get(`/api/v1/speechLibrary?libraryId=${libraryId}`);
+        return res;
+    }
 }
 
 export class DataProvider {

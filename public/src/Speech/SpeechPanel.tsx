@@ -1,7 +1,7 @@
 import * as React from "react";
 import styled from "styled-components";
 import { SpeechLibraryItem } from "../dataprovider/data-types";
-import LoginPanel from "../Components/Widgets/LoginPanel";
+import LoginPanel from "../Widgets/LoginPanel";
 import { NTKSpeechTextarea } from "./SpeechTextArea";
 import { NTKSpeechToolbar, SpeechPlayState } from "./SpeechToolbar";
 import { NTKSpeechSideNav } from "./SpeechSideNav";
