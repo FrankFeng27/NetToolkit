@@ -2,9 +2,11 @@ import * as React from "react";
 import { useEffect } from "react";
 import { connect, useDispatch, useSelector } from "react-redux";
 import { setSpeechText } from "../actions";
-import { RootState } from "../dataprovider/data-types";
+import { CurrentSpeechLibrary, CurrentSpeechLibraryNodeId, RootState } from "../dataprovider/data-types";
+import { AppDispatch } from "../store";
 import NTKSpeechPanel, { NTKSpeechPanelProps } from "./SpeechPanel";
 import { addLibrary, getLibraries, SpeechState } from "./SpeechSlice";
+import * as SpeechUtils from "./SpeechUtils";
 
 interface OwnProps {
   isLoggedIn: boolean;
@@ -46,11 +48,13 @@ const libs = [{
 }];
 
 const NTKSpeechPanelWrapper: React.FC<NTKSpeechPanelProps> = (props: NTKSpeechPanelProps) => {
-  const dispatch = useDispatch();
-  const libraries = useSelector((state: RootState) => {
-    return state.speeches?.libraries ?? [];
-  });
-  const curNode = useSelector((state:RootState) => (state.speeches.currentLibraryNode));
+  const dispatch = useDispatch<AppDispatch>();
+  const speechState = useSelector((state: RootState) => (
+    state.speeches
+  ));
+  const libraries = speechState.libraries ?? [];
+  const curNode = speechState.currentLibraryNode;
+  const curLibrary: CurrentSpeechLibrary | undefined = curNode ? {...curNode} : undefined;
   const isLoggedIn = props.isLoggedIn;
   useEffect(() => {
     if (!isLoggedIn) {
@@ -64,10 +68,17 @@ const NTKSpeechPanelWrapper: React.FC<NTKSpeechPanelProps> = (props: NTKSpeechPa
       dispatch(addLibrary({name: "", content: text, configuration: "{}"}));
     }
   }
+  function onLibrarySelect(curId: CurrentSpeechLibraryNodeId) {
+    if (SpeechUtils.areCurrentLibraryNodeIdsEqual(curId, (props.currentLibrary as CurrentSpeechLibraryNodeId))) {
+      return;
+    }
+    const node = SpeechUtils.getCurrentLibraryNodeByLibraryNodeId(curId, libs);
+    
+  }
 
   const libs = [...libraries];
   return (
-    <NTKSpeechPanel {...props} onTextChanged={onTextChange} libraries={libs}></NTKSpeechPanel>
+    <NTKSpeechPanel {...props} onTextChanged={onTextChange} libraries={libs} currentLibrary={curLibrary} onLibrarySelect={onLibrarySelect} />
   );
 };
 

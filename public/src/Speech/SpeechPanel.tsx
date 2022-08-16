@@ -1,6 +1,6 @@
 import * as React from "react";
 import styled from "styled-components";
-import { SpeechLibraryItem } from "../dataprovider/data-types";
+import { CurrentSpeechLibrary, CurrentSpeechLibraryNodeId, SpeechLibraryItem, SpeechLibraryTreeNode } from "../dataprovider/data-types";
 import LoginPanel from "../Widgets/LoginPanel";
 import { NTKSpeechTextarea } from "./SpeechTextArea";
 import { NTKSpeechToolbar, SpeechPlayState } from "./SpeechToolbar";
@@ -31,6 +31,8 @@ export interface NTKSpeechPanelProps {
   onOpenSignInDlg: () => void;
   onOpenSignUpDlg: () => void;
   libraries?: SpeechLibraryItem[];
+  currentLibrary?: CurrentSpeechLibrary;
+  onLibrarySelect: (id: CurrentSpeechLibraryNodeId) => void;
 }
 
 const NTKSpeechPanel: React.FC<NTKSpeechPanelProps>  = (props: NTKSpeechPanelProps) => {
@@ -47,7 +49,7 @@ const NTKSpeechPanel: React.FC<NTKSpeechPanelProps>  = (props: NTKSpeechPanelPro
     <NTKPanelContainer>
       {props.isLoggedIn ? (
         <NTKVerboseContainer>
-        <NTKSpeechSideNav libraries={props.libraries} />
+        <NTKSpeechSideNav libraries={props.libraries} onLibrarySelect={props.onLibrarySelect} />
         <NTKSpeechWorkArea>
           <NTKSpeechToolbar playState={playState}></NTKSpeechToolbar>
           <NTKSpeechTextarea {...props}></NTKSpeechTextarea>

@@ -3,7 +3,9 @@ import styled from "styled-components";
 import { ExpandMore as ExpandMoreIcon, ChevronRight as ChevronRightIcon} from "@mui/icons-material";
 import { styled as muiStyled } from "@mui/material/styles";
 import { TreeView, TreeItem, treeItemClasses } from "@mui/lab";
-import { SpeechLibraryItem, SpeechLibraryTreeNode } from "../dataprovider/data-types";
+import { CurrentSpeechLibraryNodeId, SpeechLibraryItem, SpeechLibraryTreeNode } from "../dataprovider/data-types";
+import { SpeechLibraryTree } from "./SpeechLibraryTree";
+import { getLibraryNodeIdFromTreeNodeId } from "./SpeechUtils";
 
 const SideNavbarContainer = styled.div`
   width: 120px;
@@ -126,14 +128,26 @@ const createLibraryWidgets = (libs?: SpeechLibraryItem[]) => {
 
 export interface NTKSpeechSideNavProps {
   libraries?: SpeechLibraryItem[];
+  onLibrarySelect: (id: CurrentSpeechLibraryNodeId) => void;
 }
 
 export const NTKSpeechSideNav: React.FC<NTKSpeechSideNavProps> = (props: NTKSpeechSideNavProps) => {
+  function onLibraryNodeSelect(nodeId: string) {
+    const id = getLibraryNodeIdFromTreeNodeId(nodeId);
+    props.onLibrarySelect(id);
+  }
+  function onNodeRename(id: CurrentSpeechLibraryNodeId) {}
+  function onNodeRemove(id: CurrentSpeechLibraryNodeId) {}
   return (
     <SideNavbarContainer>
       <SideNavItem>Add Library ...</SideNavItem>
       <SideNavItem>
-        {createLibraryWidgets(props.libraries)}
+        <SpeechLibraryTree 
+        libraries={props.libraries} 
+        onNodeSelect={onLibraryNodeSelect} 
+        onNodeRename={onNodeRename}
+        onNodeRemove={onNodeRemove}
+        />
       </SideNavItem>
     </SideNavbarContainer>
   );

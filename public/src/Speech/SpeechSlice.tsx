@@ -1,6 +1,7 @@
 import { createAsyncThunk, createEntityAdapter, createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { SpeechLibraryItem, SpeechLibraryTreeNode } from "../dataprovider/data-types";
+import { CurrentSpeechLibraryNodeId, SpeechLibraryItem, SpeechLibraryTreeNode } from "../dataprovider/data-types";
 import { DataAccessor } from "../dataprovider/dataprovider";
+import * as SpeechUtils from "./SpeechUtils";
 
 export const removeLibrary = createAsyncThunk(
   "speeches/removeLibrary", 
@@ -23,7 +24,22 @@ export const getLibraries = createAsyncThunk(
     const res = await DataAccessor.getSpeechLibraries();
     return res.data;
   }
-)
+);
+export const updateCurrentLibrary = createAsyncThunk(
+  "speeches/updateCurrentLibrary",
+  async(lib: SpeechLibraryItem) => {
+    await DataAccessor.updateSpeechLibrary(lib.id.toString(), lib.name, lib.content, lib.configuration);
+    return lib;
+  }
+);
+export const getLibraryForCurLibraryNode = createAsyncThunk(
+  "speeches/getLibrary",
+  async (id: string) => {
+    const res = await DataAccessor.getSpeechLibrary(id);
+    return res.data;
+  }
+);
+
 
 type StatusEnum = "idle" | "loading" | "rejected" | "successed";
 
@@ -78,6 +94,28 @@ const slice = createSlice({
     .addCase(getLibraries.fulfilled, (state, action) => {
       state.status = "idle";
       state.libraries = action.payload?.result ?? [];
+    })
+    .addCase(updateCurrentLibrary.pending, (state, _action) => {
+      state.status = "loading";
+    })
+    .addCase(updateCurrentLibrary.fulfilled, (state, action) => {
+      state.status = "idle";
+      const lib = action.payload;
+      state.currentLibraryNode = {libraryId: lib.id.toString(), ...lib, displayName: getSpeechLibaryDisplayName(lib.name)};
+    })
+    .addCase(updateCurrentLibrary.rejected, (state, _action) => {
+      state.status = "rejected";
+    })
+    .addCase(getLibraryForCurLibraryNode.pending, (state, _action) => {
+      state.status = "loading";
+    })
+    .addCase(getLibraryForCurLibraryNode.fulfilled, (state, action) => {
+      state.status = "idle";
+      const lib = action.payload.result;
+      state.currentLibraryNode = {...state.currentLibraryNode, content: lib.content, configuration: lib.configuration};
+    })
+    .addCase(getLibraryForCurLibraryNode.rejected, (state, _action) => {
+      state.status = "rejected";
     });
   },
 });

@@ -5,6 +5,10 @@ const extendSpeechRouter = (router, arch) => {
     const res = await exp.getSpeechLibraries(request);
     response.status(200).send({result: res});
   });
+  router.get('/api/v1/speechLibrary', async (request, response) => {
+    const res = await exp.getSpeechLibrary(request);
+    response.status(200).send({result: res});
+  });
   router.post('/api/v1/speechLibrary', async (request, response) => {
     const res = await exp.addSpeechLibrary(request);
     response.status(200).send({result: res});

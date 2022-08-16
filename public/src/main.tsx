@@ -4,9 +4,7 @@ import * as React from "react";
 import { createRoot } from "react-dom/client";
 import {Provider} from "react-redux";
 import { Application as App } from "./App"
-import reducer from "./reducer/reducer";
-
-const store = configureStore({reducer}); // configureStore({reducer})
+import { store } from "./store";
 
 const rootElement = document.getElementById('root');
 const root = createRoot(rootElement);

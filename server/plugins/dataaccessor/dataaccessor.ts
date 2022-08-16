@@ -222,6 +222,14 @@ class DatabaseAccessor implements IDatabaseAccessor {
         }
       }
     }
+    async getSpeechLibrary(id: number): Promise<ISpeechLibraryRecord> {
+      try {
+        return await this.currentDb.getSpeechLibrary(id);
+      } catch (err) {
+        this.commUtils.handleError(err);
+        return emptySpeechLibrary;
+      }
+    }
     async dropTables(): Promise<void> {
       await this.currentDb.dropSpeechTables();
       await this.currentDb.dropMemoTable();
