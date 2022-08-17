@@ -9,6 +9,9 @@ package-lock.json
 *.db
 *.sql
 *.bak
+server/plugins/commutils/*.d.ts
+server/plugins/commutils/*.js.map
+server/plugins/commutils/utils.js
 server/plugins/datatypes/*.d.ts
 server/plugins/datatypes/*.js.map
 server/plugins/datatypes/errors.js

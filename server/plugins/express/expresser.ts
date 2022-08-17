@@ -4,6 +4,7 @@
 import {IUserLogin} from "../login/userlogin";
 import { emptySpeechLibrary, IDatabaseAccessor, IMemoRecord, ISpeechLibraryRecord } from "../dataaccessor/datainterfaces";
 import { InvalidSessionUserError } from "../datatypes/errors";
+import { getRandomInt } from "../commutils/utils";
 
 export enum LoginErrorType {
     ERROR_SUCCESS = "Success",
@@ -162,8 +163,10 @@ class Expresser implements IExpresser {
         const content = request.body.content;
         const configuration = request.body.configuration;
 
-        if (id === undefined) {
-          const libName = name.length > 0 ? name : "/temporary~1";
+        if (id === undefined || id < 0) {
+          const Max_Random = 99999999;
+          const rand = getRandomInt(Max_Random);
+          const libName = name.length > 0 ? name : `/temporary~${rand}`;
           return await this.dataAccessor.addSpeechLibrary(libName, content, user, configuration);
         } else {
           return await this.dataAccessor.updateSpeechLibrary(id, name, content, user, configuration);
@@ -184,11 +187,26 @@ class Expresser implements IExpresser {
     }
     async getSpeechLibraries(request): Promise<ISpeechLibraryRecord[]> {
       try {
-        const arr = await this.dataAccessor.getSpeechLibraries(request.body.user);
+        const user = request.session?.user;
+        if (!user) {
+          this.commUtils.handleError(new InvalidSessionUserError()); 
+          return [];
+        }
+        const arr = await this.dataAccessor.getSpeechLibraries(user);
         return arr;
       } catch (err) {
         this.commUtils.handleError(err);
         return [];
+      }
+    }
+    async getSpeechLibrary(request): Promise<ISpeechLibraryRecord> {
+      try {
+        const id = parseInt(request.query.libraryId);
+        const record = await this.dataAccessor.getSpeechLibrary(id);
+        return record;
+      } catch (err) {
+        this.commUtils.handleError(err);
+        return emptySpeechLibrary;
       }
     }
 }

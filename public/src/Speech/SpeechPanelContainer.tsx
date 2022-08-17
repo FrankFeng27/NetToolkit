@@ -2,9 +2,11 @@ import * as React from "react";
 import { useEffect } from "react";
 import { connect, useDispatch, useSelector } from "react-redux";
 import { setSpeechText } from "../actions";
-import { RootState } from "../dataprovider/data-types";
+import { CurrentSpeechLibrary, CurrentSpeechLibraryNodeId, RootState } from "../dataprovider/data-types";
+import { AppDispatch } from "../store";
 import NTKSpeechPanel, { NTKSpeechPanelProps } from "./SpeechPanel";
-import { addLibrary, getLibraries, SpeechState } from "./SpeechSlice";
+import { addLibraryAsCurrent, getLibraries, getLibraryForCurLibraryNode, setCurrentLibraryNode, SpeechState, updateCurrentLibrary } from "./SpeechSlice";
+import * as SpeechUtils from "./SpeechUtils";
 
 interface OwnProps {
   isLoggedIn: boolean;
@@ -24,33 +26,14 @@ const mapDispatchToProps = dispatch => ({
   onTextChanged: text => dispatch(setSpeechText(text)),
 });
 
-// test
-const libs = [{
-  id: 1,
-  name: "/test/2022-6-27/memo",
-  content: "balahbalah",
-  userName: "fengsh",
-  configuration: "{\"speed\": 1}"
-}, {
-  id: 2,
-  name: "/test/2022-6-28/thoughts",
-  content: "balahbalah",
-  userName: "fengsh",
-  configuration: "{\"speed\": 1}"
-}, {
-  id: 3,
-  name: "/test/2022-7-7/news",
-  content: "balahbalah",
-  userName: "fengsh",
-  configuration: "{\"speed\": 1}"
-}];
-
 const NTKSpeechPanelWrapper: React.FC<NTKSpeechPanelProps> = (props: NTKSpeechPanelProps) => {
-  const dispatch = useDispatch();
-  const libraries = useSelector((state: RootState) => {
-    return state.speeches?.libraries ?? [];
-  });
-  const curNode = useSelector((state:RootState) => (state.speeches.currentLibraryNode));
+  const dispatch = useDispatch<AppDispatch>();
+  const speechState = useSelector((state: RootState) => (
+    state.speeches
+  ));
+  const libraries = speechState.libraries ?? [];
+  const curNode = speechState.currentSpeechLibrary;
+  const curLibrary: CurrentSpeechLibrary | undefined = curNode ? {...curNode} : undefined;
   const isLoggedIn = props.isLoggedIn;
   useEffect(() => {
     if (!isLoggedIn) {
@@ -61,13 +44,27 @@ const NTKSpeechPanelWrapper: React.FC<NTKSpeechPanelProps> = (props: NTKSpeechPa
 
   function onTextChange(text: string) {
     if (!curNode) {
-      dispatch(addLibrary({name: "", content: text, configuration: "{}"}));
+      dispatch(addLibraryAsCurrent({name: "", content: text, configuration: "{}"}));
+    } else {
+      dispatch(updateCurrentLibrary({id: parseInt(curNode.libraryId), content: text,
+        name: curNode.name, configuration: curNode.configuration}));
+    }
+  }
+  function onLibrarySelect(curId: CurrentSpeechLibraryNodeId) {
+    if (props.currentLibrary 
+      && SpeechUtils.areCurrentLibraryNodeIdsEqual(curId, (props.currentLibrary as CurrentSpeechLibraryNodeId))) {
+      return;
+    }
+    const curNode = SpeechUtils.getCurrentLibraryNodeByLibraryNodeId(curId, libraries);
+    dispatch(setCurrentLibraryNode(curNode));
+    if (curNode.libraryId) {
+      dispatch(getLibraryForCurLibraryNode(curId.libraryId));
     }
   }
 
   const libs = [...libraries];
   return (
-    <NTKSpeechPanel {...props} onTextChanged={onTextChange} libraries={libs}></NTKSpeechPanel>
+    <NTKSpeechPanel {...props} onTextChanged={onTextChange} libraries={libs} currentLibrary={curLibrary} onLibrarySelect={onLibrarySelect} />
   );
 };
 
