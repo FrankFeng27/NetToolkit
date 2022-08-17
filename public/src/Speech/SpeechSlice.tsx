@@ -1,5 +1,5 @@
 import { createAsyncThunk, createEntityAdapter, createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { CurrentSpeechLibraryNodeId, SpeechLibraryItem, SpeechLibraryTreeNode } from "../dataprovider/data-types";
+import { CurrentSpeechLibrary, CurrentSpeechLibraryNodeId, SpeechLibraryItem, SpeechLibraryTreeNode } from "../dataprovider/data-types";
 import { DataAccessor } from "../dataprovider/dataprovider";
 import * as SpeechUtils from "./SpeechUtils";
 
@@ -10,12 +10,17 @@ export const removeLibrary = createAsyncThunk(
     return res;
   }
 );
-export const addLibrary = createAsyncThunk(
-  "speeches/addLibrary",
-  async (lib: SpeechLibraryItem) => {
+export const addLibraryAsCurrent = createAsyncThunk(
+  "speeches/addLibraryAsCurrent",
+  async (lib: SpeechLibraryItem, { rejectWithValue }) => {
     // const res = await DataAccessor.addSpeechLibrary()
-    const res = await DataAccessor.addSpeechLibrary(lib.name, lib.content, lib.configuration);
-    return res;
+    const result = await DataAccessor.addSpeechLibrary(lib.name, lib.content, lib.configuration);
+    const curLibrary = result.data.result;
+    if (Number(curLibrary.id) === NaN || Number(curLibrary.id) < 0) {
+      return rejectWithValue(curLibrary.id);
+    }
+    const getResult = await DataAccessor.getSpeechLibraries();
+    return {libraries: getResult.data.result, curLibrary};
   }
 );
 export const getLibraries = createAsyncThunk(
@@ -47,7 +52,7 @@ export interface SpeechState {
   status: StatusEnum;
   libraries: SpeechLibraryItem[];
   libraryTree?: SpeechLibraryTreeNode;
-  currentLibraryNode?: SpeechLibraryTreeNode;
+  currentSpeechLibrary?: CurrentSpeechLibrary;
 }
 
 /// const adapter = createEntityAdapter();
@@ -59,15 +64,15 @@ export interface SpeechState {
 const initialState: SpeechState = {
   status: "idle",
   libraries: [],
-  currentLibraryNode: undefined,
+  currentSpeechLibrary: undefined,
 };
 
 const slice = createSlice({
   name: "speeches",
   initialState,
   reducers: {
-    setCurrentLibraryNode(state, action) {
-      state.currentLibraryNode = action.payload;
+    setCurrentLibraryNode(state, action: {payload: CurrentSpeechLibrary}) {
+      state.currentSpeechLibrary = { ...action.payload };
     },
   },
   extraReducers: builder => {
@@ -81,12 +86,17 @@ const slice = createSlice({
     .addCase(removeLibrary.rejected, (state, action) => {
       state.status = "rejected";
     })
-    .addCase(addLibrary.pending, (state, action) => {
+    .addCase(addLibraryAsCurrent.pending, (state, action) => {
       state.status = "loading";
     })
-    .addCase(addLibrary.fulfilled, (state, action) => {
+    .addCase(addLibraryAsCurrent.fulfilled, (state, action) => {
       state.status = "idle";
       // todo: add operations after adding lib
+      state.libraries = action.payload.libraries;
+      const curLib = action.payload.curLibrary;
+      state.currentSpeechLibrary = {
+        libraryId: curLib.id, name: curLib.name, displayName: SpeechUtils.getSpeechLibaryDisplayName(curLib.name)
+      };
     })
     .addCase(getLibraries.pending, (state, action) => {
       state.status = "loading";
@@ -101,7 +111,7 @@ const slice = createSlice({
     .addCase(updateCurrentLibrary.fulfilled, (state, action) => {
       state.status = "idle";
       const lib = action.payload;
-      state.currentLibraryNode = {libraryId: lib.id.toString(), ...lib, displayName: getSpeechLibaryDisplayName(lib.name)};
+      state.currentSpeechLibrary = {libraryId: lib.id.toString(), ...lib, displayName: SpeechUtils.getSpeechLibaryDisplayName(lib.name)};
     })
     .addCase(updateCurrentLibrary.rejected, (state, _action) => {
       state.status = "rejected";
@@ -112,7 +122,7 @@ const slice = createSlice({
     .addCase(getLibraryForCurLibraryNode.fulfilled, (state, action) => {
       state.status = "idle";
       const lib = action.payload.result;
-      state.currentLibraryNode = {...state.currentLibraryNode, content: lib.content, configuration: lib.configuration};
+      state.currentSpeechLibrary = {...state.currentSpeechLibrary, content: lib.content, configuration: lib.configuration};
     })
     .addCase(getLibraryForCurLibraryNode.rejected, (state, _action) => {
       state.status = "rejected";

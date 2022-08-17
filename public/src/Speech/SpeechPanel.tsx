@@ -45,14 +45,15 @@ const NTKSpeechPanel: React.FC<NTKSpeechPanelProps>  = (props: NTKSpeechPanelPro
       
     }
   }
+  const libText = props.currentLibrary ? props.currentLibrary.content : undefined;
   return (
     <NTKPanelContainer>
       {props.isLoggedIn ? (
         <NTKVerboseContainer>
-        <NTKSpeechSideNav libraries={props.libraries} onLibrarySelect={props.onLibrarySelect} />
+        <NTKSpeechSideNav libraries={props.libraries} onLibrarySelect={props.onLibrarySelect} currentLibrary={props.currentLibrary} />
         <NTKSpeechWorkArea>
           <NTKSpeechToolbar playState={playState}></NTKSpeechToolbar>
-          <NTKSpeechTextarea {...props}></NTKSpeechTextarea>
+          <NTKSpeechTextarea onTextChanged={props.onTextChanged} text={libText}></NTKSpeechTextarea>
         </NTKSpeechWorkArea>
       </NTKVerboseContainer>
       ): <LoginPanel onSignIn={props.onOpenSignInDlg} onSignUp={props.onOpenSignUpDlg} />}
