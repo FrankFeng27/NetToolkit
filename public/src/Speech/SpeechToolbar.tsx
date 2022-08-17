@@ -18,21 +18,52 @@ const SpeechToolButton = styled.button`
 export enum SpeechPlayState {
   kUnknown = 0,
   kPlaying = 1,
-  kPaused = 2
+  kPaused = 2,
+  kStopped = 3,
 }
 export interface NTKSpeechToolbarProps {
   onPlay?: () => void;
   onStop?: () => void;
   onResume?: () => void;
   onPause?: () => void;
-  playState: SpeechPlayState;
+  text?: string;
 }
 export const NTKSpeechToolbar: React.FC<NTKSpeechToolbarProps> = (props: NTKSpeechToolbarProps) => {
+  const synth = window.speechSynthesis;
+  const [playState, setPlayState] = React.useState<SpeechPlayState>(SpeechPlayState.kUnknown);
+
+  function onStop() {
+    synth.cancel();
+    setPlayState(SpeechPlayState.kStopped);
+  }
+  function onPlay() {
+    if (!props.text) {
+      return;
+    }
+    if (synth.paused) {
+      synth.resume();
+    } else {
+      const utter = new SpeechSynthesisUtterance(props.text);
+      synth.speak(utter);
+      utter.onend = () => (setPlayState(SpeechPlayState.kStopped));
+      utter.onpause = () => (setPlayState(SpeechPlayState.kPaused));
+    }
+    setPlayState(SpeechPlayState.kPlaying);
+  }
+  function onPause() {
+    if (playState === SpeechPlayState.kPlaying) {
+      synth.pause();
+    }
+  }
   return (
     <SpeechToolbarContainer>
       <SpeechToolItem><SpeechToolButton>Backward</SpeechToolButton></SpeechToolItem>
-      {props.playState === SpeechPlayState.kPlaying ? <SpeechToolItem onClick={props.onPause}>Pause</SpeechToolItem>
-      : <SpeechToolItem><SpeechToolButton onClick={props.onPlay}>Play</SpeechToolButton></SpeechToolItem>}
+      {playState === SpeechPlayState.kPlaying ?
+       (<SpeechToolItem><SpeechToolButton onClick={onStop}>Stop</SpeechToolButton></SpeechToolItem>) : 
+       (<SpeechToolItem><SpeechToolButton disabled>Stop</SpeechToolButton></SpeechToolItem>)}
+      {playState === SpeechPlayState.kPlaying ? 
+       <SpeechToolItem><SpeechToolButton onClick={onPause}>Pause</SpeechToolButton></SpeechToolItem>
+       : <SpeechToolItem><SpeechToolButton onClick={onPlay}>Play</SpeechToolButton></SpeechToolItem>}
       <SpeechToolItem><SpeechToolButton>Forward</SpeechToolButton></SpeechToolItem>
     </SpeechToolbarContainer>
   )

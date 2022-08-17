@@ -25,7 +25,6 @@ const NTKSpeechWorkArea = styled.div`
 `;
 
 export interface NTKSpeechPanelProps {
-  text?: string;
   onTextChanged(text: string): void;
   isLoggedIn: boolean;
   onOpenSignInDlg: () => void;
@@ -36,15 +35,6 @@ export interface NTKSpeechPanelProps {
 }
 
 const NTKSpeechPanel: React.FC<NTKSpeechPanelProps>  = (props: NTKSpeechPanelProps) => {
-  const [playState, setPlayState] = React.useState<SpeechPlayState>(SpeechPlayState.kUnknown);
-  function onPlay() {
-    const synth = window.speechSynthesis;
-    if (props.text) {
-      const utter = new SpeechSynthesisUtterance(props.text);
-      synth.speak(utter);
-      
-    }
-  }
   const libText = props.currentLibrary ? props.currentLibrary.content : undefined;
   return (
     <NTKPanelContainer>
@@ -52,7 +42,7 @@ const NTKSpeechPanel: React.FC<NTKSpeechPanelProps>  = (props: NTKSpeechPanelPro
         <NTKVerboseContainer>
         <NTKSpeechSideNav libraries={props.libraries} onLibrarySelect={props.onLibrarySelect} currentLibrary={props.currentLibrary} />
         <NTKSpeechWorkArea>
-          <NTKSpeechToolbar playState={playState}></NTKSpeechToolbar>
+          <NTKSpeechToolbar text={libText}></NTKSpeechToolbar>
           <NTKSpeechTextarea onTextChanged={props.onTextChanged} text={libText}></NTKSpeechTextarea>
         </NTKSpeechWorkArea>
       </NTKVerboseContainer>
