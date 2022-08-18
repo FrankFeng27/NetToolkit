@@ -2,7 +2,7 @@ import * as React from "react";
 import { ComponentStory, ComponentMeta } from "@storybook/react";
 
 import { SpeechLibraryTree, SpeechLibraryTreeProps } from "../SpeechLibraryTree";
-import { CurrentSpeechLibraryNodeId, SpeechLibraryItem } from "../../dataprovider/data-types";
+import { CurrentSpeechLibraryNodeId } from "../../dataprovider/data-types";
 import { getLibraryNodeIdFromTreeNodeId } from "../SpeechUtils";
 
 const SpeechLibraryTreeWrapper: React.FC<SpeechLibraryTreeProps> = (props: SpeechLibraryTreeProps) => {

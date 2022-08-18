@@ -25,6 +25,7 @@ export interface NTKSpeechSideNavProps {
   libraries?: SpeechLibraryItem[];
   currentLibrary?: CurrentSpeechLibrary;
   onLibrarySelect: (id: CurrentSpeechLibraryNodeId) => void;
+  onOpenAddLibraryDialog: () => void;
 }
 
 export const NTKSpeechSideNav: React.FC<NTKSpeechSideNavProps> = (props: NTKSpeechSideNavProps) => {
@@ -39,7 +40,7 @@ export const NTKSpeechSideNav: React.FC<NTKSpeechSideNavProps> = (props: NTKSpee
   undefined;
   return (
     <SideNavbarContainer>
-      <SideNavItem>Add Library ...</SideNavItem>
+      <SideNavItem onClick={props.onOpenAddLibraryDialog}>Add Library ...</SideNavItem>
       <SideNavItem>
         <SpeechLibraryTree 
         libraries={props.libraries}

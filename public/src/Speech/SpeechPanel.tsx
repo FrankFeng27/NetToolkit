@@ -5,6 +5,7 @@ import LoginPanel from "../Widgets/LoginPanel";
 import { NTKSpeechTextarea } from "./SpeechTextArea";
 import { NTKSpeechToolbar, SpeechPlayState } from "./SpeechToolbar";
 import { NTKSpeechSideNav } from "./SpeechSideNav";
+import { AddSpeechLibraryDialog, IAddLibraryDialogData } from "./AddSpeechLibraryDialog";
 
 const NTKPanelContainer = styled.div`
   height: 100%;
@@ -36,17 +37,36 @@ export interface NTKSpeechPanelProps {
 
 const NTKSpeechPanel: React.FC<NTKSpeechPanelProps>  = (props: NTKSpeechPanelProps) => {
   const libText = props.currentLibrary ? props.currentLibrary.content : undefined;
+  const [openDialog, setOpenDialog] = React.useState<boolean>(false);
+
+  function onOpenDialog() {
+    setOpenDialog(true);
+  }
+  function onCloseDialog() {
+    setOpenDialog(false);
+  }
+  function onAuditLibraryName(name: string) {
+    return true;
+  }
+  function onAddLibrary(data: IAddLibraryDialogData) {}
+
   return (
     <NTKPanelContainer>
       {props.isLoggedIn ? (
         <NTKVerboseContainer>
-        <NTKSpeechSideNav libraries={props.libraries} onLibrarySelect={props.onLibrarySelect} currentLibrary={props.currentLibrary} />
+        <NTKSpeechSideNav onOpenAddLibraryDialog={onOpenDialog} libraries={props.libraries} onLibrarySelect={props.onLibrarySelect} currentLibrary={props.currentLibrary} />
         <NTKSpeechWorkArea>
           <NTKSpeechToolbar text={libText}></NTKSpeechToolbar>
           <NTKSpeechTextarea onTextChanged={props.onTextChanged} text={libText}></NTKSpeechTextarea>
         </NTKSpeechWorkArea>
       </NTKVerboseContainer>
       ): <LoginPanel onSignIn={props.onOpenSignInDlg} onSignUp={props.onOpenSignUpDlg} />}
+      <AddSpeechLibraryDialog 
+       open={openDialog} 
+       onCloseDialog={onCloseDialog} 
+       onAuditLibraryName={onAuditLibraryName} 
+       onAddLibrary={onAddLibrary}
+      />
     </NTKPanelContainer>
   );
 };
