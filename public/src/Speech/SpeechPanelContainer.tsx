@@ -61,10 +61,13 @@ const NTKSpeechPanelWrapper: React.FC<NTKSpeechPanelProps> = (props: NTKSpeechPa
       dispatch(getLibraryForCurLibraryNode(curId.libraryId));
     }
   }
+  function onAddLibrary(name: string) {
+    dispatch(addLibraryAsCurrent({name: name, content: "", configuration: "{}"}));
+  }
 
   const libs = [...libraries];
   return (
-    <NTKSpeechPanel {...props} onTextChanged={onTextChange} libraries={libs} currentLibrary={curLibrary} onLibrarySelect={onLibrarySelect} />
+    <NTKSpeechPanel {...props} onAddLibrary={onAddLibrary} onTextChanged={onTextChange} libraries={libs} currentLibrary={curLibrary} onLibrarySelect={onLibrarySelect} />
   );
 };
 

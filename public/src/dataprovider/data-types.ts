@@ -24,7 +24,8 @@ export interface SpeechLibraryItem {
   name: string,
   content: string,
   userName?: string,
-  configuration: string
+  configuration: string,
+  updated?: boolean;
 }
 export interface SpeechLibraryTreeNode {
   name: string;
@@ -50,4 +51,5 @@ export interface CurrentSpeechLibrary {
   displayName?: string;
   content?: string;
   configuration?: string;
+  updated?: boolean;
 }

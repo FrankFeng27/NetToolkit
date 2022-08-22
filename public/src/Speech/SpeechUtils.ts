@@ -110,3 +110,7 @@ export const areCurrentLibraryNodeIdsEqual = (id1: CurrentSpeechLibraryNodeId, i
   (id1.libraryId && id1.libraryId === id2.libraryId)
   || (id1.name && id1.name === id2.name)
 );
+export const updateLibraries = (libs: SpeechLibraryItem[], updatedLib: SpeechLibraryItem): Array<SpeechLibraryItem> => {
+  const updatedLibraries: SpeechLibraryItem[] = libs.map(lib => (updatedLib.id && updatedLib.id === lib.id ? {...updatedLib} : {...lib}));
+  return updatedLibraries;
+}

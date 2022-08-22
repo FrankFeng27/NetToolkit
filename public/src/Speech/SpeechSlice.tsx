@@ -37,6 +37,17 @@ export const updateCurrentLibrary = createAsyncThunk(
     return lib;
   }
 );
+export const renameCurrentLibrary = createAsyncThunk(
+  "speeches/renameCurrentLibrary",
+  async (curLib: CurrentSpeechLibrary): Promise<CurrentSpeechLibrary> => {
+    if (!curLib.updated) {
+      const res = await DataAccessor.getSpeechLibrary(curLib.libraryId);
+      const lib = (res.data.result as SpeechLibraryItem) ;
+      await DataAccessor.updateSpeechLibrary(curLib.libraryId, curLib.name, lib.content, lib.configuration);
+      return {...curLib, content: lib.content, configuration: lib.configuration};
+    }
+  }
+)
 export const getLibraryForCurLibraryNode = createAsyncThunk(
   "speeches/getLibrary",
   async (id: string) => {
@@ -95,7 +106,12 @@ const slice = createSlice({
       state.libraries = action.payload.libraries;
       const curLib = action.payload.curLibrary;
       state.currentSpeechLibrary = {
-        libraryId: curLib.id, name: curLib.name, displayName: SpeechUtils.getSpeechLibaryDisplayName(curLib.name)
+        libraryId: curLib.id, 
+        name: curLib.name, 
+        displayName: SpeechUtils.getSpeechLibaryDisplayName(curLib.name), 
+        content: curLib.content, 
+        configuration: curLib.configuration,
+        updated: true
       };
     })
     .addCase(getLibraries.pending, (state, action) => {
@@ -126,6 +142,15 @@ const slice = createSlice({
     })
     .addCase(getLibraryForCurLibraryNode.rejected, (state, _action) => {
       state.status = "rejected";
+    })
+    .addCase(renameCurrentLibrary.pending, (state, _action) => {
+      state.status = "loading"
+    })
+    .addCase(renameCurrentLibrary.fulfilled, (state, action) => {
+      state.status = "idle";
+      const lib = action.payload;
+      state.currentSpeechLibrary = {...lib};
+      
     });
   },
 });

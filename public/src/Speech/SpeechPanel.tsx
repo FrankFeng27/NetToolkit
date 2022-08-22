@@ -33,6 +33,7 @@ export interface NTKSpeechPanelProps {
   libraries?: SpeechLibraryItem[];
   currentLibrary?: CurrentSpeechLibrary;
   onLibrarySelect: (id: CurrentSpeechLibraryNodeId) => void;
+  onAddLibrary: (name: string) => void;
 }
 
 const NTKSpeechPanel: React.FC<NTKSpeechPanelProps>  = (props: NTKSpeechPanelProps) => {
@@ -48,7 +49,9 @@ const NTKSpeechPanel: React.FC<NTKSpeechPanelProps>  = (props: NTKSpeechPanelPro
   function onAuditLibraryName(name: string) {
     return true;
   }
-  function onAddLibrary(data: IAddLibraryDialogData) {}
+  function onAddLibrary(data: IAddLibraryDialogData) {
+    props.onAddLibrary(data.name);
+  }
 
   return (
     <NTKPanelContainer>
