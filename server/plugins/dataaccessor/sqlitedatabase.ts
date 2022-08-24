@@ -314,6 +314,10 @@ class SqliteDatabase implements IDatabase {
       where id=?`, [name, content, configuration, id]);
       return {id, name, content, userName: user, configuration};
     }
+    async renameSpeechLibrary(id: number, name: string): Promise<void> {
+      const res = await this.db.run(`update SpeechLibraries set name=? where id=?`, [name, id]);
+      return;
+    }
     async removeSpeechLibrary(id: number): Promise<boolean> {
       if (!this.isConnected()) {
         throw new DatabaseUnconnectedError();
