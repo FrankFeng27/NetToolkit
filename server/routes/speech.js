@@ -17,6 +17,10 @@ const extendSpeechRouter = (router, arch) => {
     const res = await exp.removeSpeechLibrary(request);
     response.status(200).send({result: res});
   });
+  router.post('/api/v1/speechLibraries/rename', async (request, response) => {
+    const res = await exp.renameSpeechLibraries(request);
+    response.status(200).send({result: res});
+  });
 };
 
 module.exports = extendSpeechRouter;

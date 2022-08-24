@@ -200,6 +200,11 @@ class Expresser implements IExpresser {
       }
     }
     async getSpeechLibrary(request): Promise<ISpeechLibraryRecord> {
+      const user = request.session?.user;
+      if (!user) {
+        this.commUtils.handleError(new InvalidSessionUserError()); 
+        return emptySpeechLibrary;
+      }
       try {
         const id = parseInt(request.query.libraryId);
         const record = await this.dataAccessor.getSpeechLibrary(id);
@@ -207,6 +212,21 @@ class Expresser implements IExpresser {
       } catch (err) {
         this.commUtils.handleError(err);
         return emptySpeechLibrary;
+      }
+    }
+    async renameSpeechLibraries(request): Promise<boolean> {
+      const user = request.session?.user;
+      if (!user) {
+        this.commUtils.handleError(new InvalidSessionUserError()); 
+        return false;
+      }
+      try {
+        const libs = request.body.libraries;
+        const res = await this.dataAccessor.renameSpeechLibraries(libs);
+        return true;
+      } catch (err) {
+        this.commUtils.handleError(err);
+        return false;
       }
     }
 }
