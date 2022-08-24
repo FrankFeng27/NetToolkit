@@ -34,6 +34,8 @@ export interface NTKSpeechPanelProps {
   currentLibrary?: CurrentSpeechLibrary;
   onLibrarySelect: (id: CurrentSpeechLibraryNodeId) => void;
   onAddLibrary: (name: string) => void;
+  onRenameLibrary: (id: CurrentSpeechLibraryNodeId, newName: string) => void;
+  onRemoveLibrary: (id: CurrentSpeechLibraryNodeId) => void;
 }
 
 const NTKSpeechPanel: React.FC<NTKSpeechPanelProps>  = (props: NTKSpeechPanelProps) => {
@@ -57,7 +59,14 @@ const NTKSpeechPanel: React.FC<NTKSpeechPanelProps>  = (props: NTKSpeechPanelPro
     <NTKPanelContainer>
       {props.isLoggedIn ? (
         <NTKVerboseContainer>
-        <NTKSpeechSideNav onOpenAddLibraryDialog={onOpenDialog} libraries={props.libraries} onLibrarySelect={props.onLibrarySelect} currentLibrary={props.currentLibrary} />
+        <NTKSpeechSideNav
+          onOpenAddLibraryDialog={onOpenDialog} 
+          libraries={props.libraries} 
+          onLibrarySelect={props.onLibrarySelect} 
+          currentLibrary={props.currentLibrary} 
+          onRenameCurrentLibrary={props.onRenameLibrary}
+          onRemoveCurrentLibrary={props.onRemoveLibrary}
+        />
         <NTKSpeechWorkArea>
           <NTKSpeechToolbar text={libText}></NTKSpeechToolbar>
           <NTKSpeechTextarea onTextChanged={props.onTextChanged} text={libText}></NTKSpeechTextarea>

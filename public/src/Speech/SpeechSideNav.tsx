@@ -5,7 +5,7 @@ import { SpeechLibraryTree } from "./SpeechLibraryTree";
 import { getLibraryNodeIdFromTreeNodeId } from "./SpeechUtils";
 
 const SideNavbarContainer = styled.div`
-  width: 120px;
+  width: 150px;
   min-width: 120px;
   flex-grow: 0;
   display:flex;
@@ -26,6 +26,8 @@ export interface NTKSpeechSideNavProps {
   currentLibrary?: CurrentSpeechLibrary;
   onLibrarySelect: (id: CurrentSpeechLibraryNodeId) => void;
   onOpenAddLibraryDialog: () => void;
+  onRenameCurrentLibrary: (nodeId: CurrentSpeechLibraryNodeId, name: string) => void;
+  onRemoveCurrentLibrary: (nodeId: CurrentSpeechLibraryNodeId) => void;
 }
 
 export const NTKSpeechSideNav: React.FC<NTKSpeechSideNavProps> = (props: NTKSpeechSideNavProps) => {
@@ -33,10 +35,15 @@ export const NTKSpeechSideNav: React.FC<NTKSpeechSideNavProps> = (props: NTKSpee
     const id = getLibraryNodeIdFromTreeNodeId(nodeId);
     props.onLibrarySelect(id);
   }
-  function onNodeRename(id: CurrentSpeechLibraryNodeId) {}
-  function onNodeRemove(id: CurrentSpeechLibraryNodeId) {}
+  function onNodeRename(id: CurrentSpeechLibraryNodeId, newName: string) {
+    props.onRenameCurrentLibrary(id, newName);
+  }
+  function onNodeRemove(id: CurrentSpeechLibraryNodeId) {
+    props.onRemoveCurrentLibrary(id);
+  }
+
   const curNodeId: CurrentSpeechLibraryNodeId | undefined = props.currentLibrary ? 
-  (props.currentLibrary.libraryId ? {libraryId: props.currentLibrary.libraryId} : {name: props.currentLibrary.name}) :
+  (props.currentLibrary.id !== undefined ? {libraryId: props.currentLibrary.id.toString()} : {name: props.currentLibrary.name}) :
   undefined;
   return (
     <SideNavbarContainer>

@@ -8,6 +8,11 @@ describe('Array', function() {
     it('should return -1 when the value is not present', function() {
       assert.equal([1, 2, 3].indexOf(4), -1);
     });
+    it('should test Array.prototype.sort', () => {
+      let arr: string[] = ['/temporary~88696778', '/memos/2022/20220822', '/temporary~48065225', '/temporary~91575218'];
+      arr.sort();
+      console.log(arr);
+    });
   });
 });
 

@@ -41,9 +41,9 @@ export const renameCurrentLibrary = createAsyncThunk(
   "speeches/renameCurrentLibrary",
   async (curLib: CurrentSpeechLibrary): Promise<CurrentSpeechLibrary> => {
     if (!curLib.updated) {
-      const res = await DataAccessor.getSpeechLibrary(curLib.libraryId);
+      const res = await DataAccessor.getSpeechLibrary(curLib.id.toString());
       const lib = (res.data.result as SpeechLibraryItem) ;
-      await DataAccessor.updateSpeechLibrary(curLib.libraryId, curLib.name, lib.content, lib.configuration);
+      await DataAccessor.updateSpeechLibrary(curLib.id.toString(), curLib.name, lib.content, lib.configuration);
       return {...curLib, content: lib.content, configuration: lib.configuration};
     }
   }
@@ -106,7 +106,7 @@ const slice = createSlice({
       state.libraries = action.payload.libraries;
       const curLib = action.payload.curLibrary;
       state.currentSpeechLibrary = {
-        libraryId: curLib.id, 
+        id: curLib.id, 
         name: curLib.name, 
         displayName: SpeechUtils.getSpeechLibaryDisplayName(curLib.name), 
         content: curLib.content, 
@@ -119,7 +119,9 @@ const slice = createSlice({
     })
     .addCase(getLibraries.fulfilled, (state, action) => {
       state.status = "idle";
-      state.libraries = action.payload?.result ?? [];
+      let libraries = action.payload?.result as SpeechLibraryItem[] ?? [];
+      libraries.sort((a: SpeechLibraryItem, b: SpeechLibraryItem) => (a.name === b.name ? 0 : (a.name > b.name ? 1 : -1)));
+      state.libraries = libraries;
     })
     .addCase(updateCurrentLibrary.pending, (state, _action) => {
       state.status = "loading";
@@ -127,7 +129,7 @@ const slice = createSlice({
     .addCase(updateCurrentLibrary.fulfilled, (state, action) => {
       state.status = "idle";
       const lib = action.payload;
-      state.currentSpeechLibrary = {libraryId: lib.id.toString(), ...lib, displayName: SpeechUtils.getSpeechLibaryDisplayName(lib.name)};
+      state.currentSpeechLibrary = {id: lib.id, ...lib, displayName: SpeechUtils.getSpeechLibaryDisplayName(lib.name)};
     })
     .addCase(updateCurrentLibrary.rejected, (state, _action) => {
       state.status = "rejected";
@@ -150,7 +152,7 @@ const slice = createSlice({
       state.status = "idle";
       const lib = action.payload;
       state.currentSpeechLibrary = {...lib};
-      
+
     });
   },
 });

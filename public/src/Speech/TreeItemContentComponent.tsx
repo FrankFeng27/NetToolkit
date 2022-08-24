@@ -73,13 +73,15 @@ export const TreeItemContentComponent = React.forwardRef((props: TreeItemContent
   }
   function onChange(event) {
     const v = event.target.value;
-    if (v) {
-      setText(v);
-    }
+    v !== undefined ? setText(v) : setText("");
   }
   function onInputBlur(event) {
-    const v = event.target.value;
-    props.onLabelChanged(v);
+    const v = event.target.value as string;
+    if (v === undefined || v.length === 0) {
+      setText(props.labelText);
+    } else {
+      props.onLabelChanged(v);
+    }
     setMode("display");
   }
   return (

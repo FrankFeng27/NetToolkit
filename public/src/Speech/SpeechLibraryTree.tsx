@@ -1,9 +1,8 @@
 import * as React from "react";
 import styled from "styled-components";
-import { TreeView, TreeItem, treeItemClasses } from "@mui/lab";
-import { styled as muiStyled } from "@mui/material";
+import { TreeView } from "@mui/lab";
 import { ChevronRight, ExpandMore } from "@mui/icons-material";
-import { CurrentSpeechLibrary, CurrentSpeechLibraryNodeId, SpeechLibraryItem, SpeechLibraryTreeNode } from "../dataprovider/data-types";
+import { CurrentSpeechLibraryNodeId, SpeechLibraryItem, SpeechLibraryTreeNode } from "../dataprovider/data-types";
 import { areCurrentLibraryNodeIdsEqual, buildTreeItemId, buildTreeItemIdByNodeId, createLibraryTree, getLibraryNodeIdFromCurrentLibrary, getLibraryNodeIdFromTreeNode, getLibraryNodeIdFromTreeNodeId } from "./SpeechUtils";
 import { SpeechLibraryTreeItem } from "./SpeechLibraryTreeItem";
 
@@ -34,8 +33,9 @@ export const SpeechLibraryTree: React.FC<SpeechLibraryTreeProps> = (props: Speec
     props.onNodeSelect(nodeIds);
   }
   function onLabelTextChanged(nodeId: CurrentSpeechLibraryNodeId, v: string) {
-
+    props.onNodeRename(nodeId, v);
   }
+  
   const createLibraryWidget = (node: SpeechLibraryTreeNode, curNodeId: CurrentSpeechLibraryNodeId) => {
     const id = getLibraryNodeIdFromTreeNode(node);
     const children = ((node.children && node.children.length > 0) ? node.children.map(n => createLibraryWidget(n, curNodeId)) : undefined);

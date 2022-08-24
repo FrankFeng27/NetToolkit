@@ -5,7 +5,6 @@ import { TreeItem, treeItemClasses, TreeItemProps } from "@mui/lab";
 import { CurrentSpeechLibraryNodeId } from "../dataprovider/data-types";
 import { TreeItemContentComponent } from "./TreeItemContentComponent";
 import { buildTreeItemIdByNodeId } from "./SpeechUtils";
-import { PropaneSharp } from "@mui/icons-material";
 
 const StyledTreeItemRoot = muiStyled(TreeItem)(( {theme} ) => ({
   [`.${treeItemClasses.content} .${treeItemClasses.label}`]: {
