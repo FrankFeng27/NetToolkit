@@ -52,6 +52,8 @@ describe("SqliteDatabase - tests", () => {
     assert(record1.id >= 0);
     let record2 = await database.addSpeechLibrary("2022-6-28", "placeholder", "test", "{\"speed\": 1}");
     assert(record2.id >= 0);
+    const recordGot = await database.getSpeechLibrary(record2.id);
+    assert(recordGot.name === "2022-6-28");
     let records = await database.getSpeechLibraries("test");
     assert(records.length === 2);
     let res = await database.removeSpeechLibrary(record2.id);

@@ -101,6 +101,8 @@ describe.skip('MysqlDatabase - tests.', () => {
       assert(record.id >= 0);
       record = await mysqlDB.addSpeechLibrary("2022-6-28", "placeholder", "test", "{\"speed\": 1}");
       assert(record.id >= 0);
+      const recordGot = await mysqlDB.getSpeechLibrary(record.id);
+      assert(recordGot.name === "2022-6-28");
       let records = await mysqlDB.getSpeechLibraries("test");
       assert(records.length === 2);
       const res = await mysqlDB.removeSpeechLibrary(record.id);

@@ -416,11 +416,11 @@ class MysqlDatabase implements IDatabase {
             reject(err);
             return;
           }
-          if (!result) {
+          if (!result || result.length === 0) {
             resolve(emptySpeechLibrary);
             return;
           }
-          resolve(result);
+          resolve(result[0]);
         });
       });
     }
