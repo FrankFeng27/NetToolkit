@@ -5,7 +5,7 @@ import { setSpeechText } from "../actions";
 import { CurrentSpeechLibrary, CurrentSpeechLibraryNodeId, RootState } from "../dataprovider/data-types";
 import { AppDispatch } from "../store";
 import NTKSpeechPanel, { NTKSpeechPanelProps } from "./SpeechPanel";
-import { addLibraryAsCurrent, getLibraries, getLibraryForCurLibraryNode, setCurrentLibraryNode, SpeechState, updateCurrentLibrary } from "./SpeechSlice";
+import { addLibraryAsCurrent, getLibraries, getLibraryForCurLibraryNode, renameCurrentLibrary, setCurrentLibraryNode, SpeechState, updateCurrentLibrary } from "./SpeechSlice";
 import * as SpeechUtils from "./SpeechUtils";
 
 interface NTKSpeechPanelWrapperProps {
@@ -40,7 +40,8 @@ const NTKSpeechPanelContainer: React.FC<NTKSpeechPanelWrapperProps> = (props: NT
   }
   function onLibrarySelect(curId: CurrentSpeechLibraryNodeId) {
     if (curLibrary 
-      && SpeechUtils.areCurrentLibraryNodeIdsEqual(curId, curLibrary.id !== undefined ? {libraryId: curLibrary.id.toString()} : {name: curLibrary.name})) {
+      && SpeechUtils.areCurrentLibraryNodeIdsEqual(curId, curLibrary.id !== undefined ? {libraryId: curLibrary.id.toString(), name: curLibrary.name} 
+      : {name: curLibrary.name})) {
       return;
     }
     const curNode = SpeechUtils.getCurrentLibraryNodeByLibraryNodeId(curId, libraries);
@@ -52,7 +53,11 @@ const NTKSpeechPanelContainer: React.FC<NTKSpeechPanelWrapperProps> = (props: NT
   function onAddLibrary(name: string) {
     dispatch(addLibraryAsCurrent({name: name, content: "", configuration: "{}"}));
   }
-  function onRenameCurrentLibrary(id: CurrentSpeechLibraryNodeId, newName: string) {}
+  function onRenameCurrentLibrary(id: CurrentSpeechLibraryNodeId, newName: string) {
+    const renameStruct = (id.libraryId !== undefined ? {library: {id: Number(id.libraryId), name: id.name}, name: newName, libraries}
+    : {library: {name: id.name}, name: newName, libraries});
+    dispatch(renameCurrentLibrary(renameStruct));
+  }
   function onRemoveCurrentLibrary(id: CurrentSpeechLibraryNodeId) {}
 
   const libs = [...libraries];

@@ -4,23 +4,23 @@ export const getSpeechLibaryDisplayName = (name: string): string => {
   const ix = name.lastIndexOf("/");
   return name.substring(ix+1);
 };
+const separator = "*$*"
 export const buildTreeItemId = (node: CurrentSpeechLibrary): string => {
-  return node.id !== undefined ? `node-${node.id}` : `node-${node.name}`;
+  return node.id !== undefined ? `node${separator}${node.id}${separator}${node.name}` : `node${separator}${node.name}`;
 }
 
 export const buildTreeItemIdByNodeId = (nodeId: CurrentSpeechLibraryNodeId): string => (
-  nodeId.libraryId ? `node-${nodeId.libraryId}` : `node-${nodeId.name}`
+  nodeId.libraryId ? `node${separator}${nodeId.libraryId}${separator}${nodeId.name}` : `node${separator}${nodeId.name}`
 );
 export const getLibraryNodeIdFromTreeNodeId = (nodeId: string): CurrentSpeechLibraryNodeId => {
-  const id = nodeId.slice(5);
-  const numId = Number(id);
-  return Number.isNaN(numId) ? {name: id} : {libraryId: id};
+  const arr = nodeId.split(separator);
+  return arr.length === 3 ? {libraryId: arr[1], name: arr[2]} : {name: arr[1]};
 }
 export const getLibraryNodeIdFromTreeNode = (node: SpeechLibraryTreeNode): CurrentSpeechLibraryNodeId => (
-  node.libraryId ? {libraryId: node.libraryId} : {name: node.name}
+  node.libraryId ? {libraryId: node.libraryId, name: node.name} : {name: node.name}
 );
 export const getLibraryNodeIdFromCurrentLibrary = (lib: CurrentSpeechLibrary): CurrentSpeechLibraryNodeId => (
-  lib.id !== undefined ? {libraryId: lib.id.toString()} : {name: lib.name}
+  lib.id !== undefined ? {libraryId: lib.id.toString(), name: lib.name} : {name: lib.name}
 );
 export const getCurrentLibraryNodeByLibraryNodeId = 
 (id: CurrentSpeechLibraryNodeId, libs: SpeechLibraryItem[]): CurrentSpeechLibrary => {

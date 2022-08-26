@@ -1,5 +1,5 @@
 import { createAsyncThunk, createEntityAdapter, createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { CurrentSpeechLibrary, CurrentSpeechLibraryNodeId, SpeechLibraryItem, SpeechLibraryTreeNode } from "../dataprovider/data-types";
+import { CurrentSpeechLibrary, CurrentSpeechLibraryNodeId, SpeechLibraryItem, SpeechLibraryTreeNode, SpeechRenameStruct } from "../dataprovider/data-types";
 import { DataAccessor } from "../dataprovider/dataprovider";
 import * as SpeechUtils from "./SpeechUtils";
 
@@ -39,13 +39,19 @@ export const updateCurrentLibrary = createAsyncThunk(
 );
 export const renameCurrentLibrary = createAsyncThunk(
   "speeches/renameCurrentLibrary",
-  async (curLib: CurrentSpeechLibrary): Promise<CurrentSpeechLibrary> => {
-    if (!curLib.updated) {
-      const res = await DataAccessor.getSpeechLibrary(curLib.id.toString());
-      const lib = (res.data.result as SpeechLibraryItem) ;
-      await DataAccessor.updateSpeechLibrary(curLib.id.toString(), curLib.name, lib.content, lib.configuration);
-      return {...curLib, content: lib.content, configuration: lib.configuration};
+  async (renameStruct: SpeechRenameStruct): Promise<SpeechRenameStruct> => {
+    if (renameStruct.library.id !== undefined) {
+      const libs = renameStruct.libraries.map(lib => (lib.id === renameStruct.library.id ? {...lib, name: renameStruct.name} : {...lib}));
+      const res = await DataAccessor.renameSpeechLibraries([{id: renameStruct.library.id, name: renameStruct.name}]);
+      return {library: {id: renameStruct.library.id, name: renameStruct.name}, name: renameStruct.name, libraries: libs};
     }
+    const length = renameStruct.name.length;
+    const parentName = renameStruct.library.name;
+    const libs = renameStruct.libraries.filter(v => v.name.substring(0, length) === parentName)
+    .map(v => ({id: v.id, name: `${parentName}${v.name.substring(length)}`}));
+    await DataAccessor.renameSpeechLibraries(libs);
+    const libraries = await DataAccessor.getSpeechLibraries();
+    return {library: {...renameStruct.library, name: renameStruct.name}, ...renameStruct, libraries};
   }
 )
 export const getLibraryForCurLibraryNode = createAsyncThunk(
@@ -55,7 +61,6 @@ export const getLibraryForCurLibraryNode = createAsyncThunk(
     return res.data;
   }
 );
-
 
 type StatusEnum = "idle" | "loading" | "rejected" | "successed";
 
@@ -150,9 +155,9 @@ const slice = createSlice({
     })
     .addCase(renameCurrentLibrary.fulfilled, (state, action) => {
       state.status = "idle";
-      const lib = action.payload;
-      state.currentSpeechLibrary = {...lib};
-
+      const renameStruct = action.payload;
+      state.currentSpeechLibrary = renameStruct.library;
+      state.libraries = renameStruct.libraries;
     });
   },
 });

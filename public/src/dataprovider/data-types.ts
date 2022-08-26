@@ -38,7 +38,7 @@ export interface SpeechLibraryTreeNode {
 }
 
 export interface CurrentSpeechLibraryNodeId {
-  name?: string;
+  name: string;
   libraryId?: string;
 }
 
@@ -47,3 +47,8 @@ export interface RootState {
   login: LoginState;
 }
 export type CurrentSpeechLibrary = SpeechLibraryItem;
+export interface SpeechRenameStruct {
+  library: CurrentSpeechLibrary;
+  name: string;
+  libraries: SpeechLibraryItem[];
+}

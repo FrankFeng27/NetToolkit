@@ -56,6 +56,10 @@ export class DataAccessor {
         const res = await axios.get(`/api/v1/speechLibrary?libraryId=${libraryId}`);
         return res;
     }
+    static async renameSpeechLibraries(libs: Array<{id: number, name: string}>) {
+        const res = await axios.post('/api/v1/speechLibraries/rename', {libraries: libs});
+        return res;
+    }
 }
 
 export class DataProvider {

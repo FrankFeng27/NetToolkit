@@ -43,7 +43,7 @@ export const NTKSpeechSideNav: React.FC<NTKSpeechSideNavProps> = (props: NTKSpee
   }
 
   const curNodeId: CurrentSpeechLibraryNodeId | undefined = props.currentLibrary ? 
-  (props.currentLibrary.id !== undefined ? {libraryId: props.currentLibrary.id.toString()} : {name: props.currentLibrary.name}) :
+  (props.currentLibrary.id !== undefined ? {libraryId: props.currentLibrary.id.toString(), name: props.currentLibrary.name} : {name: props.currentLibrary.name}) :
   undefined;
   return (
     <SideNavbarContainer>
