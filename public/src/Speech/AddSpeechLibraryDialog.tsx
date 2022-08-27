@@ -31,6 +31,7 @@ export const AddSpeechLibraryDialog: React.FC<AddSpeechLibraryDialogProps> = (pr
   const [name, setName] = React.useState<string>("Input Name here");
     
   function onSubmitData(data: IAddLibraryDialogData) {
+    props.onCloseDialog();
     props.onAddLibrary(data);
   }
   function onNameChange(e) {

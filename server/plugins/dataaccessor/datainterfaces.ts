@@ -72,6 +72,7 @@ export interface IDatabaseAccessor {
     addSpeechLibrary(name: string, content: string, user: string, configuration: string): Promise<ISpeechLibraryRecord>;
     updateSpeechLibrary(id: number, name: string, content: string, user: string, configuration: string): Promise<ISpeechLibraryRecord>;
     removeSpeechLibrary(id: number): Promise<boolean>;
+    removeSpeechLibraries(ids: number[]): Promise<boolean>;
     getSpeechLibraries(user: string): Promise<Array<ISpeechLibraryRecord>>;
     getSpeechLibrary(id: number): Promise<ISpeechLibraryRecord>;
     renameSpeechLibraries(speeches: SpeechRenameStruct[]): Promise<boolean>;

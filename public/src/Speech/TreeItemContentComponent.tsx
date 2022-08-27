@@ -73,6 +73,11 @@ export const TreeItemContentComponent = React.forwardRef((props: TreeItemContent
         setMode("display");
       }
     }
+    if (event.key === 'Escape') {
+      if (mode === "edit") {
+        setMode("display");
+      }
+    }
   }
   function onChange(event) {
     const v = event.target.value;
@@ -116,15 +121,4 @@ export const TreeItemContentComponent = React.forwardRef((props: TreeItemContent
       )}
     </div>
   );
-  /*
-  return (
-    <Container ref={ref as React.Ref<HTMLDivElement>}>
-      {mode === "display" ? (
-        <label onDoubleClick={onDoubleClick} onClick={onClick}>{text}</label>
-      ) : (
-        <input value={text} onChange={onChange} onKeyDown={onKeyPressed} onBlur={onInputBlur} autoFocus></input>
-      )}
-    </Container>
-  );
-  */
 });

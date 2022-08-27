@@ -1,15 +1,8 @@
 import { createAsyncThunk, createEntityAdapter, createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { CurrentSpeechLibrary, CurrentSpeechLibraryNodeId, SpeechLibraryItem, SpeechLibraryTreeNode, SpeechRenameStruct } from "../dataprovider/data-types";
+import { CurrentSpeechLibrary, CurrentSpeechLibraryNodeId, SpeechLibraryItem, SpeechLibraryTreeNode, SpeechRemoveStruct, SpeechRenameStruct } from "../dataprovider/data-types";
 import { DataAccessor } from "../dataprovider/dataprovider";
 import * as SpeechUtils from "./SpeechUtils";
 
-export const removeLibrary = createAsyncThunk(
-  "speeches/removeLibrary", 
-  async (lib: SpeechLibraryItem) => {
-    const res = await DataAccessor.removeSpeechLibrary(lib.id.toString());
-    return res;
-  }
-);
 export const addLibraryAsCurrent = createAsyncThunk(
   "speeches/addLibraryAsCurrent",
   async (lib: SpeechLibraryItem, { rejectWithValue }) => {
@@ -53,7 +46,26 @@ export const renameCurrentLibrary = createAsyncThunk(
     const libraries = await DataAccessor.getSpeechLibraries();
     return {library: {...renameStruct.library, name: renameStruct.name}, ...renameStruct, libraries};
   }
-)
+);
+export const removeCurrentLibrary = createAsyncThunk(
+  "speeches/removeCurrentLibrary",
+  async (removeStruct: SpeechRemoveStruct): Promise<SpeechRemoveStruct> => {
+    const id = removeStruct.id;
+    const libraries = removeStruct.libraries;
+    if (id.libraryId !== undefined) {
+      const numId = Number(id.libraryId);
+      const res = await DataAccessor.removeSpeechLibraries([Number(id.libraryId)]);
+      const libs = libraries.filter(lib => (lib.id !== numId));
+      return {id, libraries: libs};
+    }
+    const parentName = removeStruct.id.name;
+    const length = parentName.length;
+    const ids = removeStruct.libraries.filter(v => v.name.substring(0, length) === parentName).map(v => (v.id));
+    await DataAccessor.removeSpeechLibraries(ids);
+    const libs = await DataAccessor.getSpeechLibraries();
+    return {id, libraries: libs};
+  }
+);
 export const getLibraryForCurLibraryNode = createAsyncThunk(
   "speeches/getLibrary",
   async (id: string) => {
@@ -92,17 +104,7 @@ const slice = createSlice({
     },
   },
   extraReducers: builder => {
-    builder.addCase(removeLibrary.pending, (state, action ) => {
-      state.status = "loading";
-    })
-    .addCase(removeLibrary.fulfilled, (state, action) => {
-      state.status = "idle";
-      // todo: add operation after removing lib
-    })
-    .addCase(removeLibrary.rejected, (state, action) => {
-      state.status = "rejected";
-    })
-    .addCase(addLibraryAsCurrent.pending, (state, action) => {
+    builder.addCase(addLibraryAsCurrent.pending, (state, action) => {
       state.status = "loading";
     })
     .addCase(addLibraryAsCurrent.fulfilled, (state, action) => {
@@ -124,8 +126,8 @@ const slice = createSlice({
     })
     .addCase(getLibraries.fulfilled, (state, action) => {
       state.status = "idle";
-      let libraries = action.payload?.result as SpeechLibraryItem[] ?? [];
-      libraries.sort((a: SpeechLibraryItem, b: SpeechLibraryItem) => (a.name === b.name ? 0 : (a.name > b.name ? 1 : -1)));
+      let libraries = (action.payload?.result as SpeechLibraryItem[]) ?? [];
+      libraries = SpeechUtils.sortSpeechLibraries(libraries);
       state.libraries = libraries;
     })
     .addCase(updateCurrentLibrary.pending, (state, _action) => {
@@ -157,7 +159,18 @@ const slice = createSlice({
       state.status = "idle";
       const renameStruct = action.payload;
       state.currentSpeechLibrary = renameStruct.library;
-      state.libraries = renameStruct.libraries;
+      const libraries = SpeechUtils.sortSpeechLibraries(renameStruct.libraries);
+      state.libraries = libraries;
+    })
+    .addCase(removeCurrentLibrary.pending, (state, _action) => {
+      state.status = "loading";
+    })
+    .addCase(removeCurrentLibrary.fulfilled, (state, action) => {
+      state.status = "idle";
+      state.currentSpeechLibrary = undefined;
+      const removeStruct = action.payload;
+      const libraries = SpeechUtils.sortSpeechLibraries(removeStruct.libraries);
+      state.libraries = removeStruct.libraries;
     });
   },
 });

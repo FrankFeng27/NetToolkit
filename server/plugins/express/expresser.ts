@@ -178,8 +178,27 @@ class Expresser implements IExpresser {
     }
     async removeSpeechLibrary(request): Promise<boolean> {
       try {
+        const user = request.session?.user;
+        if (!user) {
+          this.commUtils.handleError(new InvalidSessionUserError()); 
+          return false;
+        }
         const id = request.params.libraryId;
         return await this.dataAccessor.removeSpeechLibrary(id as number);
+      } catch (err) {
+        this.commUtils.handleError(err);
+        return false;
+      }
+    }
+    async removeSpeechLibraries(request): Promise<boolean> {
+      try {
+        const user = request.session?.user;
+        if (!user) {
+          this.commUtils.handleError(new InvalidSessionUserError()); 
+          return false;
+        }
+        const ids = request.body.ids;
+        return await this.dataAccessor.removeSpeechLibraries(ids as number[]);
       } catch (err) {
         this.commUtils.handleError(err);
         return false;

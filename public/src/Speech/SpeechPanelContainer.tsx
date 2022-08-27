@@ -5,7 +5,7 @@ import { setSpeechText } from "../actions";
 import { CurrentSpeechLibrary, CurrentSpeechLibraryNodeId, RootState } from "../dataprovider/data-types";
 import { AppDispatch } from "../store";
 import NTKSpeechPanel, { NTKSpeechPanelProps } from "./SpeechPanel";
-import { addLibraryAsCurrent, getLibraries, getLibraryForCurLibraryNode, renameCurrentLibrary, setCurrentLibraryNode, SpeechState, updateCurrentLibrary } from "./SpeechSlice";
+import { addLibraryAsCurrent, getLibraries, getLibraryForCurLibraryNode, removeCurrentLibrary, renameCurrentLibrary, setCurrentLibraryNode, SpeechState, updateCurrentLibrary } from "./SpeechSlice";
 import * as SpeechUtils from "./SpeechUtils";
 
 interface NTKSpeechPanelWrapperProps {
@@ -58,9 +58,12 @@ const NTKSpeechPanelContainer: React.FC<NTKSpeechPanelWrapperProps> = (props: NT
     : {library: {name: id.name}, name: newName, libraries});
     dispatch(renameCurrentLibrary(renameStruct));
   }
-  function onRemoveCurrentLibrary(id: CurrentSpeechLibraryNodeId) {}
+  function onRemoveCurrentLibrary(id: CurrentSpeechLibraryNodeId) {
+    dispatch(removeCurrentLibrary({id, libraries}));
+  }
 
-  const libs = [...libraries];
+  console.log(`libraries: ${libraries}`);
+  const libs = libraries !== undefined ? [...libraries] : [];
   return (
     <NTKSpeechPanel 
     {...props} 

@@ -210,6 +210,16 @@ class DatabaseAccessor implements IDatabaseAccessor {
         return true;
       }
     }
+    async removeSpeechLibraries(ids: number[]): Promise<boolean> {
+      try {
+        const promises = ids.map(id => (this.removeSpeechLibrary(id)));
+        await Promise.all(promises);
+        return true;
+      } catch (err) {
+        this.commUtils.handleError(err);
+        return true;
+      }
+    }
     async getSpeechLibraries(user: string): Promise<ISpeechLibraryRecord[]> {
       try {
         return await this.currentDb.getSpeechLibraries(user);

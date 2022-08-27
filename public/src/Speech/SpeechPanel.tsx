@@ -54,9 +54,17 @@ const NTKSpeechPanel: React.FC<NTKSpeechPanelProps>  = (props: NTKSpeechPanelPro
   function onAddLibrary(data: IAddLibraryDialogData) {
     props.onAddLibrary(data.name);
   }
+  function onKeyPressed(e) {
+    if (e.key === "Delete" && props.currentLibrary !== undefined) {
+      const curLib = props.currentLibrary;
+      props.onRemoveLibrary((curLib.id !== undefined ? 
+        {libraryId: curLib.id.toString(), name: curLib.name}
+        : {name: curLib.name}))
+    }
+  }
 
   return (
-    <NTKPanelContainer>
+    <NTKPanelContainer onKeyDown={onKeyPressed}>
       {props.isLoggedIn ? (
         <NTKVerboseContainer>
         <NTKSpeechSideNav

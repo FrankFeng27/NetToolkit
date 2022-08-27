@@ -117,3 +117,24 @@ export const updateLibraries = (libs: SpeechLibraryItem[], updatedLib: SpeechLib
   const updatedLibraries: SpeechLibraryItem[] = libs.map(lib => (updatedLib.id && updatedLib.id === lib.id ? {...updatedLib} : {...lib}));
   return updatedLibraries;
 }
+export enum SortDirection {
+  Ascend=0,
+  Descend=1,
+}
+export enum SortMethod {
+  Name=0,
+}
+export const sortSpeechLibraries = (
+  libraries: SpeechLibraryItem[],
+  dir?: SortDirection,
+  method?: SortMethod
+): SpeechLibraryItem[] => {
+  // By now, we only support to sort by name
+  dir = dir ?? SortDirection.Ascend;
+  method = method ?? SortMethod.Name;
+  if (dir === SortDirection.Ascend) {
+    return libraries.sort((a: SpeechLibraryItem, b: SpeechLibraryItem) => (a.name === b.name ? 0 : (a.name > b.name ? 1 : -1)));
+  } else {
+    return libraries.sort((a: SpeechLibraryItem, b: SpeechLibraryItem) => (a.name === b.name ? 0 : (a.name > b.name ? -1 : 1)));
+  }
+}

@@ -52,3 +52,7 @@ export interface SpeechRenameStruct {
   name: string;
   libraries: SpeechLibraryItem[];
 }
+export interface SpeechRemoveStruct {
+  id: CurrentSpeechLibraryNodeId;
+  libraries: SpeechLibraryItem[];
+}

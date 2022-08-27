@@ -41,8 +41,8 @@ export class DataAccessor {
       const res = await axios.get('/api/v1/speechLibraries');
       return res;
     }
-    static async removeSpeechLibrary(libraryId: string): Promise<boolean> {
-      const res = await axios.delete(`/api/v1/speechLibrary/${libraryId}`);
+      static async removeSpeechLibraries(ids: number[]): Promise<boolean> {
+      const res = await axios.delete(`/api/v1/speechLibraries`, {data: {ids}});
       return res.status === 200;
     }
     static async addSpeechLibrary(name: string, content: string, configuration: string) {
@@ -60,6 +60,7 @@ export class DataAccessor {
         const res = await axios.post('/api/v1/speechLibraries/rename', {libraries: libs});
         return res;
     }
+    
 }
 
 export class DataProvider {
