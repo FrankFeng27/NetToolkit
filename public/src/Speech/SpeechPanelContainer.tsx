@@ -5,28 +5,16 @@ import { setSpeechText } from "../actions";
 import { CurrentSpeechLibrary, CurrentSpeechLibraryNodeId, RootState } from "../dataprovider/data-types";
 import { AppDispatch } from "../store";
 import NTKSpeechPanel, { NTKSpeechPanelProps } from "./SpeechPanel";
-import { addLibraryAsCurrent, getLibraries, getLibraryForCurLibraryNode, setCurrentLibraryNode, SpeechState, updateCurrentLibrary } from "./SpeechSlice";
+import { addLibraryAsCurrent, getLibraries, getLibraryForCurLibraryNode, removeCurrentLibrary, renameCurrentLibrary, setCurrentLibraryNode, SpeechState, updateCurrentLibrary } from "./SpeechSlice";
 import * as SpeechUtils from "./SpeechUtils";
 
-interface OwnProps {
+interface NTKSpeechPanelWrapperProps {
   isLoggedIn: boolean;
   onOpenSignInDlg: () => void;
   onOpenSignUpDlg: () => void;
 }
 
-interface DispatchProps {
-  onTextChanged: (text: string) => void;
-}
-
-const mapStateToProps = (state: RootState): SpeechState => {
-
-  return {...state.speeches};
-};
-const mapDispatchToProps = dispatch => ({
-  onTextChanged: text => dispatch(setSpeechText(text)),
-});
-
-const NTKSpeechPanelWrapper: React.FC<NTKSpeechPanelProps> = (props: NTKSpeechPanelProps) => {
+const NTKSpeechPanelContainer: React.FC<NTKSpeechPanelWrapperProps> = (props: NTKSpeechPanelWrapperProps) => {
   const dispatch = useDispatch<AppDispatch>();
   const speechState = useSelector((state: RootState) => (
     state.speeches
@@ -46,27 +34,48 @@ const NTKSpeechPanelWrapper: React.FC<NTKSpeechPanelProps> = (props: NTKSpeechPa
     if (!curNode) {
       dispatch(addLibraryAsCurrent({name: "", content: text, configuration: "{}"}));
     } else {
-      dispatch(updateCurrentLibrary({id: parseInt(curNode.libraryId), content: text,
+      dispatch(updateCurrentLibrary({id: curNode.id, content: text,
         name: curNode.name, configuration: curNode.configuration}));
     }
   }
   function onLibrarySelect(curId: CurrentSpeechLibraryNodeId) {
-    if (props.currentLibrary 
-      && SpeechUtils.areCurrentLibraryNodeIdsEqual(curId, (props.currentLibrary as CurrentSpeechLibraryNodeId))) {
+    if (curLibrary 
+      && SpeechUtils.areCurrentLibraryNodeIdsEqual(curId, curLibrary.id !== undefined ? {libraryId: curLibrary.id.toString(), name: curLibrary.name} 
+      : {name: curLibrary.name})) {
       return;
     }
     const curNode = SpeechUtils.getCurrentLibraryNodeByLibraryNodeId(curId, libraries);
     dispatch(setCurrentLibraryNode(curNode));
-    if (curNode.libraryId) {
+    if (curNode.id !== undefined) {
       dispatch(getLibraryForCurLibraryNode(curId.libraryId));
     }
   }
+  function onAddLibrary(name: string) {
+    dispatch(addLibraryAsCurrent({name: name, content: "", configuration: "{}"}));
+  }
+  function onRenameCurrentLibrary(id: CurrentSpeechLibraryNodeId, newName: string) {
+    const renameStruct = (id.libraryId !== undefined ? {library: {id: Number(id.libraryId), name: id.name}, name: newName, libraries}
+    : {library: {name: id.name}, name: newName, libraries});
+    dispatch(renameCurrentLibrary(renameStruct));
+  }
+  function onRemoveCurrentLibrary(id: CurrentSpeechLibraryNodeId) {
+    dispatch(removeCurrentLibrary({id, libraries}));
+  }
 
-  const libs = [...libraries];
+  console.log(`libraries: ${libraries}`);
+  const libs = libraries !== undefined ? [...libraries] : [];
   return (
-    <NTKSpeechPanel {...props} onTextChanged={onTextChange} libraries={libs} currentLibrary={curLibrary} onLibrarySelect={onLibrarySelect} />
+    <NTKSpeechPanel 
+    {...props} 
+    onAddLibrary={onAddLibrary} 
+    onTextChanged={onTextChange} 
+    libraries={libs} 
+    currentLibrary={curLibrary} 
+    onLibrarySelect={onLibrarySelect} 
+    onRenameLibrary={onRenameCurrentLibrary}
+    onRemoveLibrary={onRemoveCurrentLibrary}
+    />
   );
 };
 
-const NTKSpeechPanelContainer = connect<SpeechState, DispatchProps, OwnProps>(mapStateToProps, mapDispatchToProps)(NTKSpeechPanelWrapper);
 export default NTKSpeechPanelContainer;

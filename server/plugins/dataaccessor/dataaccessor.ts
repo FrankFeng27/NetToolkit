@@ -1,6 +1,6 @@
 
 /// var MySqlDatabase = require('./mysqldatabase');
-import { IDatabaseAccessor, IUserRecord, IMemoRecord, IDatabase, ISpeechLibraryRecord, emptySpeechLibrary } from "./datainterfaces";
+import { IDatabaseAccessor, IUserRecord, IMemoRecord, IDatabase, ISpeechLibraryRecord, emptySpeechLibrary, SpeechRenameStruct } from "./datainterfaces";
 import MysqlDatabase from "./mysqldatabase";
 import SqliteDatabase from "./sqlitedatabase";
 import path = require("path");
@@ -210,6 +210,16 @@ class DatabaseAccessor implements IDatabaseAccessor {
         return true;
       }
     }
+    async removeSpeechLibraries(ids: number[]): Promise<boolean> {
+      try {
+        const promises = ids.map(id => (this.removeSpeechLibrary(id)));
+        await Promise.all(promises);
+        return true;
+      } catch (err) {
+        this.commUtils.handleError(err);
+        return true;
+      }
+    }
     async getSpeechLibraries(user: string): Promise<ISpeechLibraryRecord[]> {
       try {
         return await this.currentDb.getSpeechLibraries(user);
@@ -234,6 +244,15 @@ class DatabaseAccessor implements IDatabaseAccessor {
       await this.currentDb.dropSpeechTables();
       await this.currentDb.dropMemoTable();
       await this.currentDb.dropUserTable();
+    }
+    async renameSpeechLibraries(speeches: SpeechRenameStruct[]): Promise<boolean> {
+      const promises = speeches.map(speech => (this.currentDb.renameSpeechLibrary(speech.id, speech.name)));
+      try {
+        await Promise.all(promises);
+      } catch (err) {
+        return false;
+      }
+      return true;
     }
 }
 

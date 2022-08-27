@@ -22,9 +22,11 @@ export interface MemoData {
 export interface SpeechLibraryItem {
   id?: number,
   name: string,
-  content: string,
+  displayName?: string,
+  content?: string,
   userName?: string,
-  configuration: string
+  configuration?: string,
+  updated?: boolean;
 }
 export interface SpeechLibraryTreeNode {
   name: string;
@@ -36,7 +38,7 @@ export interface SpeechLibraryTreeNode {
 }
 
 export interface CurrentSpeechLibraryNodeId {
-  name?: string;
+  name: string;
   libraryId?: string;
 }
 
@@ -44,10 +46,13 @@ export interface RootState {
   speeches: SpeechState;
   login: LoginState;
 }
-export interface CurrentSpeechLibrary {
-  libraryId?: string;
+export type CurrentSpeechLibrary = SpeechLibraryItem;
+export interface SpeechRenameStruct {
+  library: CurrentSpeechLibrary;
   name: string;
-  displayName?: string;
-  content?: string;
-  configuration?: string;
+  libraries: SpeechLibraryItem[];
+}
+export interface SpeechRemoveStruct {
+  id: CurrentSpeechLibraryNodeId;
+  libraries: SpeechLibraryItem[];
 }

@@ -382,6 +382,17 @@ class MysqlDatabase implements IDatabase {
         });
       });
     }
+    renameSpeechLibrary(id: number, name: string): Promise<void> {
+      return new Promise((resolve, reject) => {
+        this.pool.query(`update SpeechLibraries set name=? where id=?`, [name, id], (err, _result) => {
+          if (err) {
+            reject(err);
+            return;
+          }
+          resolve();
+        });
+      });
+    }
     async removeSpeechLibrary(id: number): Promise<boolean> {
       if (!this.isConnected()) {
         throw new DatabaseUnconnectedError();
@@ -405,11 +416,11 @@ class MysqlDatabase implements IDatabase {
             reject(err);
             return;
           }
-          if (!result) {
+          if (!result || result.length === 0) {
             resolve(emptySpeechLibrary);
             return;
           }
-          resolve(result);
+          resolve(result[0]);
         });
       });
     }

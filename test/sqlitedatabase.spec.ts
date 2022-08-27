@@ -52,6 +52,8 @@ describe("SqliteDatabase - tests", () => {
     assert(record1.id >= 0);
     let record2 = await database.addSpeechLibrary("2022-6-28", "placeholder", "test", "{\"speed\": 1}");
     assert(record2.id >= 0);
+    const recordGot = await database.getSpeechLibrary(record2.id);
+    assert(recordGot.name === "2022-6-28");
     let records = await database.getSpeechLibraries("test");
     assert(records.length === 2);
     let res = await database.removeSpeechLibrary(record2.id);
@@ -72,5 +74,17 @@ describe("SqliteDatabase - tests", () => {
     assert(record1.id >= 0);
     let res = await database.updateSpeechLibrary(record1.id, "2022-6-27", "balahbalah", "test", "{}");
     assert(res !== undefined);
+  });
+  it("should test to rename an existed library", async () => {
+    let existed = await database.isUserExisted("test");
+    if (!existed) {
+      await database.addUser("test", "123@456.com", "123456", "salttemp", "+=-", "1.1");
+    }
+    let record1 = await database.addSpeechLibrary("/memo/2022/2022-6-27", "placeholder", "test", "{\"speed\": 1}");
+    assert(record1.id >= 0);
+    await database.renameSpeechLibrary(record1.id, "/backup/2022/2022-6-27");
+    const res = await database.getSpeechLibrary(record1.id);
+    assert(res !== undefined);
+    assert(res.name === "/backup/2022/2022-6-27")
   });
 });

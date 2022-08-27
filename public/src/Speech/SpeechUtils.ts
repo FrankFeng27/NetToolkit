@@ -4,23 +4,23 @@ export const getSpeechLibaryDisplayName = (name: string): string => {
   const ix = name.lastIndexOf("/");
   return name.substring(ix+1);
 };
+const separator = "*$*"
 export const buildTreeItemId = (node: CurrentSpeechLibrary): string => {
-  return node.libraryId ? `node-${node.libraryId}` : `node-${node.name}`;
+  return node.id !== undefined ? `node${separator}${node.id}${separator}${node.name}` : `node${separator}${node.name}`;
 }
 
 export const buildTreeItemIdByNodeId = (nodeId: CurrentSpeechLibraryNodeId): string => (
-  nodeId.libraryId ? `node-${nodeId.libraryId}` : `node-${nodeId.name}`
+  nodeId.libraryId ? `node${separator}${nodeId.libraryId}${separator}${nodeId.name}` : `node${separator}${nodeId.name}`
 );
 export const getLibraryNodeIdFromTreeNodeId = (nodeId: string): CurrentSpeechLibraryNodeId => {
-  const id = nodeId.slice(5);
-  const numId = Number(id);
-  return Number.isNaN(numId) ? {name: id} : {libraryId: id};
+  const arr = nodeId.split(separator);
+  return arr.length === 3 ? {libraryId: arr[1], name: arr[2]} : {name: arr[1]};
 }
 export const getLibraryNodeIdFromTreeNode = (node: SpeechLibraryTreeNode): CurrentSpeechLibraryNodeId => (
-  node.libraryId ? {libraryId: node.libraryId} : {name: node.name}
+  node.libraryId ? {libraryId: node.libraryId, name: node.name} : {name: node.name}
 );
 export const getLibraryNodeIdFromCurrentLibrary = (lib: CurrentSpeechLibrary): CurrentSpeechLibraryNodeId => (
-  lib.libraryId ? {libraryId: lib.libraryId} : {name: lib.name}
+  lib.id !== undefined ? {libraryId: lib.id.toString(), name: lib.name} : {name: lib.name}
 );
 export const getCurrentLibraryNodeByLibraryNodeId = 
 (id: CurrentSpeechLibraryNodeId, libs: SpeechLibraryItem[]): CurrentSpeechLibrary => {
@@ -29,7 +29,7 @@ export const getCurrentLibraryNodeByLibraryNodeId =
       const libraryId = Number(id.libraryId);
       if (libraryId === lib.id) {
         return {
-            libraryId: id.libraryId,
+            id: Number(id.libraryId),
             name: lib.name,
             content: lib.content,
             configuration: lib.configuration,
@@ -110,3 +110,31 @@ export const areCurrentLibraryNodeIdsEqual = (id1: CurrentSpeechLibraryNodeId, i
   (id1.libraryId && id1.libraryId === id2.libraryId)
   || (id1.name && id1.name === id2.name)
 );
+export const areTwoLibrariesSame 
+= (id: CurrentSpeechLibraryNodeId, lib: CurrentSpeechLibrary) => (id.libraryId ? id.libraryId === lib.id.toString() : id.name === lib.name);
+
+export const updateLibraries = (libs: SpeechLibraryItem[], updatedLib: SpeechLibraryItem): Array<SpeechLibraryItem> => {
+  const updatedLibraries: SpeechLibraryItem[] = libs.map(lib => (updatedLib.id && updatedLib.id === lib.id ? {...updatedLib} : {...lib}));
+  return updatedLibraries;
+}
+export enum SortDirection {
+  Ascend=0,
+  Descend=1,
+}
+export enum SortMethod {
+  Name=0,
+}
+export const sortSpeechLibraries = (
+  libraries: SpeechLibraryItem[],
+  dir?: SortDirection,
+  method?: SortMethod
+): SpeechLibraryItem[] => {
+  // By now, we only support to sort by name
+  dir = dir ?? SortDirection.Ascend;
+  method = method ?? SortMethod.Name;
+  if (dir === SortDirection.Ascend) {
+    return libraries.sort((a: SpeechLibraryItem, b: SpeechLibraryItem) => (a.name === b.name ? 0 : (a.name > b.name ? 1 : -1)));
+  } else {
+    return libraries.sort((a: SpeechLibraryItem, b: SpeechLibraryItem) => (a.name === b.name ? 0 : (a.name > b.name ? -1 : 1)));
+  }
+}

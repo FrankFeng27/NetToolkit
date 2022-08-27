@@ -13,8 +13,12 @@ const extendSpeechRouter = (router, arch) => {
     const res = await exp.addSpeechLibrary(request);
     response.status(200).send({result: res});
   });
-  router.delete('/api/v1/speechLibrary/:libraryId', async (request, response) => {
-    const res = await exp.removeSpeechLibrary(request);
+  router.delete('/api/v1/speechLibraries', async (request, response) => {
+    const res = await exp.removeSpeechLibraries(request);
+    response.status(200).send({result: res});
+  });
+  router.post('/api/v1/speechLibraries/rename', async (request, response) => {
+    const res = await exp.renameSpeechLibraries(request);
     response.status(200).send({result: res});
   });
 };

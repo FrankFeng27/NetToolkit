@@ -5,6 +5,7 @@ import * as React from "react";
 
 export interface TreeItemContentComponentProps extends TreeItemContentProps {
   labelText: string;
+  name: string;
   onLabelChanged: (value: string) => void;
   id: string;
   currentId: string;
@@ -53,11 +54,13 @@ export const TreeItemContentComponent = React.forwardRef((props: TreeItemContent
     }
     if (mode === "display") {
       setMode("edit");
+      setText(props.name);
     }
   }
   function onClick(event) {
     if (props.id === props.currentId) {
       setMode("edit");
+      setText(props.name);
     } else {
       handleSelection(event);
     }
@@ -70,16 +73,23 @@ export const TreeItemContentComponent = React.forwardRef((props: TreeItemContent
         setMode("display");
       }
     }
+    if (event.key === 'Escape') {
+      if (mode === "edit") {
+        setMode("display");
+      }
+    }
   }
   function onChange(event) {
     const v = event.target.value;
-    if (v) {
-      setText(v);
-    }
+    v !== undefined ? setText(v) : setText("");
   }
   function onInputBlur(event) {
-    const v = event.target.value;
-    props.onLabelChanged(v);
+    const v = event.target.value as string;
+    if (v === undefined || v.length === 0) {
+      setText(props.labelText);
+    } else {
+      props.onLabelChanged(v);
+    }
     setMode("display");
   }
   return (
@@ -106,19 +116,9 @@ export const TreeItemContentComponent = React.forwardRef((props: TreeItemContent
         {props.labelText}
       </Typography>
       ): (
-        <Input value={text} onChange={onChange} onKeyDown={onKeyPressed} onBlur={onInputBlur} autoFocus />
+        <Input value={text} onChange={onChange} onKeyDown={onKeyPressed} onBlur={onInputBlur} autoFocus 
+        sx={{fontSize: "12px!important", padding: "0!important"}} />
       )}
     </div>
   );
-  /*
-  return (
-    <Container ref={ref as React.Ref<HTMLDivElement>}>
-      {mode === "display" ? (
-        <label onDoubleClick={onDoubleClick} onClick={onClick}>{text}</label>
-      ) : (
-        <input value={text} onChange={onChange} onKeyDown={onKeyPressed} onBlur={onInputBlur} autoFocus></input>
-      )}
-    </Container>
-  );
-  */
 });

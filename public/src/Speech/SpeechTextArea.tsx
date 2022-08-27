@@ -36,7 +36,7 @@ export const NTKSpeechTextarea: React.FC<NTKSpeechTextAreaProps> = (props: NTKSp
   return (
     <TextAreaContainer>
     {
-      text.length > 0 ?
+      text.length >= 0 ?
       (<TextArea onChange={onTextChanged} value={text}></TextArea>)
       : (<TextArea onChange={onTextChanged} placeholder="type here..."></TextArea>)
     }
