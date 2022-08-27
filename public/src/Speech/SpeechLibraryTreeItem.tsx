@@ -36,12 +36,13 @@ export const SpeechLibraryTreeItem: React.FC<SpeechLibraryTreeItemProps> = (
   const id = buildTreeItemIdByNodeId(props.nodeId);
   const currentId = props.curNodeId ? buildTreeItemIdByNodeId(props.curNodeId) : "";
   const labelText = props.label;
+  const name = props.nodeId.name;
   return (
     <StyledTreeItemRoot
     key={id}
     nodeId={id}
     ContentComponent={TreeItemContentComponent}
-    ContentProps={{labelText, id, currentId, onLabelChanged} as any}
+    ContentProps={{labelText, id, name, currentId, onLabelChanged} as any}
     children={props.children}
     />
   );

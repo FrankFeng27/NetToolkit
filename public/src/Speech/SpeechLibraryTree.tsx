@@ -13,6 +13,7 @@ const LibraryTreeContainer = styled.div`
 `;
 const LibrariesLabel = styled.div`
   flex-grow: 0;
+  padding: 0 2px;
 `;
 
 export interface SpeechLibraryTreeProps {

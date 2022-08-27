@@ -1,6 +1,7 @@
 import * as React from "react";
 import styled from "styled-components";
-import { CurrentSpeechLibrary, CurrentSpeechLibraryNodeId, SpeechLibraryItem, SpeechLibraryTreeNode } from "../dataprovider/data-types";
+import { Button } from "@mui/material";
+import { CurrentSpeechLibrary, CurrentSpeechLibraryNodeId, SpeechLibraryItem } from "../dataprovider/data-types";
 import { SpeechLibraryTree } from "./SpeechLibraryTree";
 import { getLibraryNodeIdFromTreeNodeId } from "./SpeechUtils";
 
@@ -47,7 +48,16 @@ export const NTKSpeechSideNav: React.FC<NTKSpeechSideNavProps> = (props: NTKSpee
   undefined;
   return (
     <SideNavbarContainer>
-      <SideNavItem onClick={props.onOpenAddLibraryDialog}>Add Library ...</SideNavItem>
+      <SideNavItem>
+        <Button variant="text" 
+          sx={{
+            fontSize: 12, 
+            padding: "0 2px",
+            ":hover": {backgroundColor: "primary.light", color: "primary.contrastText"},
+            borderRadius: 0
+          }} 
+          onClick={props.onOpenAddLibraryDialog}>Add Library ...</Button>
+      </SideNavItem>
       <SideNavItem>
         <SpeechLibraryTree 
         libraries={props.libraries}
