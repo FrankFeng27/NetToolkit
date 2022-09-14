@@ -56,6 +56,12 @@ export const NTKSpeechToolbar: React.FC<NTKSpeechToolbarProps> = (props: NTKSpee
       utter.onpause = () => (
         setPlayState(SpeechPlayState.kPaused)
       );
+      utter.onmark = (e:SpeechSynthesisEvent) => {
+        console.log(e);
+      };
+      utter.onboundary = (e: SpeechSynthesisEvent) => {
+        console.log(`${props.text.substring(e.charIndex, e.charIndex + 10)}`);
+      }
     }
     setPlayState(SpeechPlayState.kPlaying);
   }

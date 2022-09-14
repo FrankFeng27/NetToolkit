@@ -43,7 +43,8 @@ export const renameCurrentLibrary = createAsyncThunk(
     const libs = renameStruct.libraries.filter(v => v.name.substring(0, length) === parentName)
     .map(v => ({id: v.id, name: `${parentName}${v.name.substring(length)}`}));
     await DataAccessor.renameSpeechLibraries(libs);
-    const libraries = await DataAccessor.getSpeechLibraries();
+    const librariesResult = await DataAccessor.getSpeechLibraries();
+    const libraries = librariesResult?.data?.result;
     return {library: {...renameStruct.library, name: renameStruct.name}, ...renameStruct, libraries};
   }
 );

@@ -32,7 +32,6 @@ export const NTKSpeechTextarea: React.FC<NTKSpeechTextAreaProps> = (props: NTKSp
     }
     /// getGlobalData().currentSpeechText = e.target.value;
   }
-  console.log(`text is ${text}`);
   return (
     <TextAreaContainer>
     {
