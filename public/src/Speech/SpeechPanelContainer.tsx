@@ -1,12 +1,25 @@
 import * as React from "react";
 import { useEffect } from "react";
-import { connect, useDispatch, useSelector } from "react-redux";
-import { setSpeechText } from "../actions";
+import { useDispatch, useSelector } from "react-redux";
+import styled from "styled-components";
 import { CurrentSpeechLibrary, CurrentSpeechLibraryNodeId, RootState } from "../dataprovider/data-types";
 import { AppDispatch } from "../store";
-import NTKSpeechPanel, { NTKSpeechPanelProps } from "./SpeechPanel";
-import { addLibraryAsCurrent, getLibraries, getLibraryForCurLibraryNode, removeCurrentLibrary, renameCurrentLibrary, setCurrentLibraryNode, SpeechState, updateCurrentLibrary } from "./SpeechSlice";
+import { SpeechConfirmDialog } from "./SpeechConfirmDialog";
+import NTKSpeechPanel from "./SpeechPanel";
+import {
+  addLibraryAsCurrent, 
+  getLibraries, 
+  getLibraryForCurLibraryNode, 
+  removeCurrentLibrary, 
+  renameCurrentLibrary, 
+  setCurrentLibraryNode,
+   updateCurrentLibraryContent 
+} from "./SpeechSlice";
 import * as SpeechUtils from "./SpeechUtils";
+
+const StyledSpeechPanelContainer = styled.div `
+  height: 100%;
+`;
 
 interface NTKSpeechPanelWrapperProps {
   isLoggedIn: boolean;
@@ -23,6 +36,8 @@ const NTKSpeechPanelContainer: React.FC<NTKSpeechPanelWrapperProps> = (props: NT
   const curNode = speechState.currentSpeechLibrary;
   const curLibrary: CurrentSpeechLibrary | undefined = curNode ? {...curNode} : undefined;
   const isLoggedIn = props.isLoggedIn;
+  const [openRmConfirmDlg, setOpenRmConfirmDlg] = React.useState(false);
+  const [libIdToRemove, setLibIdToRemove] = React.useState<CurrentSpeechLibraryNodeId|undefined>(undefined);
   useEffect(() => {
     if (!isLoggedIn) {
       return;
@@ -34,8 +49,12 @@ const NTKSpeechPanelContainer: React.FC<NTKSpeechPanelWrapperProps> = (props: NT
     if (!curNode) {
       dispatch(addLibraryAsCurrent({name: "", content: text, configuration: "{}"}));
     } else {
-      dispatch(updateCurrentLibrary({id: curNode.id, content: text,
-        name: curNode.name, configuration: curNode.configuration}));
+      dispatch(updateCurrentLibraryContent({
+        id: curNode.id, 
+        content: text,
+        name: curNode.name, 
+        configuration: curNode.configuration
+      }));
     }
   }
   function onLibrarySelect(curId: CurrentSpeechLibraryNodeId) {
@@ -59,12 +78,26 @@ const NTKSpeechPanelContainer: React.FC<NTKSpeechPanelWrapperProps> = (props: NT
     dispatch(renameCurrentLibrary(renameStruct));
   }
   function onRemoveCurrentLibrary(id: CurrentSpeechLibraryNodeId) {
+    /// dispatch(removeCurrentLibrary({id, libraries}));
+    setLibIdToRemove(id);
+    setOpenRmConfirmDlg(true);
+  }
+  function onOKToConfirmRemoveLibrary(userData: any) {
+    setOpenRmConfirmDlg(false);
+    if (userData === undefined) {
+      return;
+    }
+    const id = userData as CurrentSpeechLibraryNodeId;
     dispatch(removeCurrentLibrary({id, libraries}));
+  }
+  function onCancelConfirmRemoveLibrary() {
+    setOpenRmConfirmDlg(false);
   }
 
   console.log(`libraries: ${libraries}`);
   const libs = libraries !== undefined ? [...libraries] : [];
   return (
+    <StyledSpeechPanelContainer>
     <NTKSpeechPanel 
     {...props} 
     onAddLibrary={onAddLibrary} 
@@ -75,6 +108,15 @@ const NTKSpeechPanelContainer: React.FC<NTKSpeechPanelWrapperProps> = (props: NT
     onRenameLibrary={onRenameCurrentLibrary}
     onRemoveLibrary={onRemoveCurrentLibrary}
     />
+    <SpeechConfirmDialog
+    open={openRmConfirmDlg} 
+    title="Remove Library" 
+    text="Are you sure to delete the library permanently?" 
+    userData={libIdToRemove}
+    onOKCallback={onOKToConfirmRemoveLibrary}
+    onCancelCallback={onCancelConfirmRemoveLibrary}
+    />
+    </StyledSpeechPanelContainer>
   );
 };
 

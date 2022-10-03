@@ -10,6 +10,7 @@ const LibraryTreeContainer = styled.div`
   flex-grow: 10;
   display: flex;
   flex-direction: column;
+  width: 100%;
 `;
 const LibrariesLabel = styled.div`
   flex-grow: 0;
@@ -40,7 +41,7 @@ export const SpeechLibraryTree: React.FC<SpeechLibraryTreeProps> = (props: Speec
   const createLibraryWidget = (node: SpeechLibraryTreeNode, curNodeId: CurrentSpeechLibraryNodeId) => {
     const id = getLibraryNodeIdFromTreeNode(node);
     const children = ((node.children && node.children.length > 0) ? node.children.map(n => createLibraryWidget(n, curNodeId)) : undefined);
-    return  (<SpeechLibraryTreeItem onLabelTextChanged={onLabelTextChanged} curNodeId={curNodeId} nodeId={id} label={node.displayName}>
+    return  (<SpeechLibraryTreeItem onLabelTextChanged={onLabelTextChanged} onNodeRemove={props.onNodeRemove} curNodeId={curNodeId} nodeId={id} label={node.displayName}>
       {children}
     </SpeechLibraryTreeItem>)
   };

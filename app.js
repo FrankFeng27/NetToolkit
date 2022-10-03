@@ -35,6 +35,9 @@ class CoreEngine {
     app.use('/imgs', express.static(path.join(__dirname, 'public/resources/images')));
     /// app.use('/imgs', express.static(path.join(__dirname, 'public/imgs')));
     app.use('/css', express.static(path.join(__dirname, 'public/css')));
+    /// app.use('/jquery', express.static(path.join(__dirname, 'node_modules/jquery/dist')));
+    /// app.use('/jquery-ui', express.static(path.join(__dirname, 'node_modules/jquery-ui/dist')));
+    /// app.use('/highlight-within-textarea', express.static(path.join(__dirname, 'node_modules/highlight-within-textarea')));
         
   }
   init_plugin() {

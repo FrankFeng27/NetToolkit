@@ -1,5 +1,6 @@
 import * as React from "react";
 import styled from "styled-components";
+import { TextRange, splitTextToSentence, SpeechRange } from "./SpeechUtils";
 
 const SpeechToolbarContainer = styled.div`
   height: 32px;
@@ -17,6 +18,15 @@ const SpeechToolButton = styled.button`
 `;
 const SpeechVoicesSelect = styled.select``;
 
+const convertSentencesToRanges = (arr: Array<string>): Array<TextRange> => {
+  let start = 0;
+  const res: Array<TextRange> = [];
+  arr.forEach(v => (
+    res.push({startIndex: start, endIndex: (start += v.length)})
+  ));
+  return res;
+};
+
 export enum SpeechPlayState {
   kPlaying = 0,
   kPaused = 1,
@@ -27,6 +37,7 @@ export interface NTKSpeechToolbarProps {
   onStop?: () => void;
   onResume?: () => void;
   onPause?: () => void;
+  setRange?: (range?: SpeechRange ) => void;
   text?: string;
 }
 export const NTKSpeechToolbar: React.FC<NTKSpeechToolbarProps> = (props: NTKSpeechToolbarProps) => {
@@ -34,7 +45,9 @@ export const NTKSpeechToolbar: React.FC<NTKSpeechToolbarProps> = (props: NTKSpee
   const voices = synth.getVoices();
   const [playState, setPlayState] = React.useState<SpeechPlayState>(SpeechPlayState.kStopped);
   const [voice, setVoice] = React.useState<string>(voices.length > 0 ? voices[0].name : "");
+  const setRangeCb = props.setRange != undefined ? props.setRange : (r?: SpeechRange) => {};
 
+  let arrRanges: Array<TextRange> = [];
   function onStop() {
     synth.cancel();
     setPlayState(SpeechPlayState.kStopped);
@@ -46,13 +59,16 @@ export const NTKSpeechToolbar: React.FC<NTKSpeechToolbarProps> = (props: NTKSpee
     if (synth.paused) {
       synth.resume();
     } else {
+      const sentences = splitTextToSentence(props.text);
+      arrRanges = convertSentencesToRanges(sentences);
       const speechVoice = voices.find(v => v.name === voice);
       const utter = new SpeechSynthesisUtterance(props.text);
       utter.voice = speechVoice;
       synth.speak(utter);
-      utter.onend = () => (
-        setPlayState(SpeechPlayState.kStopped)
-      );
+      utter.onend = () => {
+        setPlayState(SpeechPlayState.kStopped);
+        setRangeCb();
+      };
       utter.onpause = () => (
         setPlayState(SpeechPlayState.kPaused)
       );
@@ -60,7 +76,10 @@ export const NTKSpeechToolbar: React.FC<NTKSpeechToolbarProps> = (props: NTKSpee
         console.log(e);
       };
       utter.onboundary = (e: SpeechSynthesisEvent) => {
-        console.log(`${props.text.substring(e.charIndex, e.charIndex + 10)}`);
+        const range = arrRanges.find((r: TextRange) => (e.charIndex >= r.startIndex && e.charIndex < r.endIndex));
+        const speechRange: SpeechRange = {sentenceRange: range, wordRange: {startIndex: e.charIndex, endIndex: e.charIndex + e.charLength}};
+        console.log(`range is ${range.startIndex} - ${range.endIndex}`);
+        setRangeCb(speechRange);
       }
     }
     setPlayState(SpeechPlayState.kPlaying);

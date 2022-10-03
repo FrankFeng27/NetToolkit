@@ -1,6 +1,8 @@
 
 import * as React from "react";
 import styled from "styled-components";
+import { HighlightWithinTextarea } from "react-highlight-within-textarea";
+import { SpeechRange, TextRange } from "./SpeechUtils";
 /// import { getGlobalData } from "../dataprovider/global-data";
 
 const TextAreaContainer = styled.div`
@@ -10,35 +12,61 @@ const TextAreaContainer = styled.div`
   display: flex;
   flex-direction: column;
   padding: 10px 0;
+  overflow: hidden;
 `;
 
-const TextArea = styled.textarea`
-  flex-grow: 10;
+const TextArea = styled.div`
+  height: 100%;
+  border: 1px solid black;
+  text-align: left;
+  padding: 5px;
+  overflow: scroll;
 `;
 
-interface NTKSpeechTextAreaProps {
+export interface ChangeSpeechRangeCb {
+  (r: SpeechRange): void;
+}
+
+export interface NTKSpeechTextAreaProps {
   text?: string;
   onTextChanged?: (text: string)=>void;
+  setChangeRangeCb: (cb: ChangeSpeechRangeCb) => void;
 }
 
 export const NTKSpeechTextarea: React.FC<NTKSpeechTextAreaProps> = (props: NTKSpeechTextAreaProps) => {
-  const text = props.text ? props.text.slice() : "";
+  const content = props.text ? props.text.slice() : "";
+  const [text, setText] = React.useState(content);
+  const [speechRange, setSpeechRange] = React.useState<SpeechRange | undefined>();
   function onTextChanged(e: React.ChangeEvent<HTMLTextAreaElement>) {
-    if (!e.target || !e.target.value) {
+    if (e === undefined || typeof e !== "string") {
+      return;
+    }
+    if (text !== undefined && e === text) {
       return;
     }
     if (props.onTextChanged) {
-      props.onTextChanged(e.target.value as string);
+      props.onTextChanged(e);
+      setText(e);
     }
-    /// getGlobalData().currentSpeechText = e.target.value;
   }
+  React.useEffect(() => {
+    props.setChangeRangeCb(setSpeechRange);
+  }, []);
+  const range = (speechRange) ? [{
+      highlight: [speechRange.sentenceRange.startIndex, speechRange.wordRange.startIndex],
+      className: "yellow"
+    }, {
+      highlight: [speechRange.wordRange.endIndex, speechRange.sentenceRange.endIndex],
+      className: "yellow"
+    }, {
+      highlight: [speechRange.wordRange.startIndex, speechRange.wordRange.endIndex],
+      className: "red"
+    }] : undefined;
   return (
     <TextAreaContainer>
-    {
-      text.length >= 0 ?
-      (<TextArea onChange={onTextChanged} value={text}></TextArea>)
-      : (<TextArea onChange={onTextChanged} placeholder="type here..."></TextArea>)
-    }
+      <TextArea>
+        <HighlightWithinTextarea placeholder="" highlight={range} onChange={onTextChanged} value={text}></HighlightWithinTextarea>
+    </TextArea>
     </TextAreaContainer>
   );
 };

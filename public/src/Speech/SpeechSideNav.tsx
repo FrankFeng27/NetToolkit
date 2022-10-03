@@ -54,7 +54,8 @@ export const NTKSpeechSideNav: React.FC<NTKSpeechSideNavProps> = (props: NTKSpee
             fontSize: 12, 
             padding: "0 2px",
             ":hover": {backgroundColor: "primary.light", color: "primary.contrastText"},
-            borderRadius: 0
+            borderRadius: 0,
+            height: 14
           }} 
           onClick={props.onOpenAddLibraryDialog}>Add Library ...</Button>
       </SideNavItem>
