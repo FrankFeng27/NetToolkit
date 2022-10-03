@@ -1,5 +1,16 @@
 import { CurrentSpeechLibrary, CurrentSpeechLibraryNodeId, SpeechLibraryItem, SpeechLibraryTreeNode } from "../dataprovider/data-types";
 
+export interface TextRange {
+  startIndex: number, 
+  endIndex: number
+};
+
+export interface SpeechRange {
+  wordRange: TextRange,
+  sentenceRange: TextRange
+}
+
+
 export const getSpeechLibaryDisplayName = (name: string): string => {
   const ix = name.lastIndexOf("/");
   return name.substring(ix+1);
@@ -138,3 +149,8 @@ export const sortSpeechLibraries = (
     return libraries.sort((a: SpeechLibraryItem, b: SpeechLibraryItem) => (a.name === b.name ? 0 : (a.name > b.name ? -1 : 1)));
   }
 }
+export const splitTextToSentence = (text: string) => {
+  const pattern = /[^\.!;\?]+[\.!;\n\?]+/g
+  const arr = text.match(pattern);
+  return arr ?? [text];
+};

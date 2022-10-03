@@ -2,7 +2,8 @@
 import * as React from "react";
 import { Route, BrowserRouter, Routes } from "react-router-dom";
 import { createBrowserHistory } from "history";
-import { styled } from "@mui/material/styles";
+// import { styled } from "@mui/material/styles";
+import styled from "styled-components";
 
 /// import MemoPanelRoute from "./MemoPanelRoute";
 /// import WatermarkPanelRoute from "./WatermarkPanelRoute";

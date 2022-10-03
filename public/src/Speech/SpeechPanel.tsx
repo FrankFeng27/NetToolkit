@@ -6,6 +6,7 @@ import { NTKSpeechTextarea } from "./SpeechTextArea";
 import { NTKSpeechToolbar, SpeechPlayState } from "./SpeechToolbar";
 import { NTKSpeechSideNav } from "./SpeechSideNav";
 import { AddSpeechLibraryDialog, IAddLibraryDialogData } from "./AddSpeechLibraryDialog";
+import { NTKSpeechWorkArea } from "./SpeechWorkArea";
 
 const NTKPanelContainer = styled.div`
   height: 100%;
@@ -17,12 +18,7 @@ const NTKVerboseContainer = styled.div`
   flex-grow: 10;
   display: flex;
   flex-direction: row;
-`;
-const NTKSpeechWorkArea = styled.div`
-  flex-grow: 10;
-  display: flex;
-  flex-direction: column;
-  padding: 20px 10px 40px 10px;
+  overflow: hidden;
 `;
 
 export interface NTKSpeechPanelProps {
@@ -56,10 +52,11 @@ const NTKSpeechPanel: React.FC<NTKSpeechPanelProps>  = (props: NTKSpeechPanelPro
   }
   function onKeyPressed(e) {
     if (e.key === "Delete" && props.currentLibrary !== undefined) {
-      const curLib = props.currentLibrary;
-      props.onRemoveLibrary((curLib.id !== undefined ? 
-        {libraryId: curLib.id.toString(), name: curLib.name}
-        : {name: curLib.name}))
+      const activeElement = document.activeElement;
+      /// const curLib = props.currentLibrary;
+      /// props.onRemoveLibrary((curLib.id !== undefined ? 
+      ///   {libraryId: curLib.id.toString(), name: curLib.name}
+      ///   : {name: curLib.name}))
     }
   }
 
@@ -75,10 +72,7 @@ const NTKSpeechPanel: React.FC<NTKSpeechPanelProps>  = (props: NTKSpeechPanelPro
           onRenameCurrentLibrary={props.onRenameLibrary}
           onRemoveCurrentLibrary={props.onRemoveLibrary}
         />
-        <NTKSpeechWorkArea>
-          <NTKSpeechToolbar text={libText}></NTKSpeechToolbar>
-          <NTKSpeechTextarea onTextChanged={props.onTextChanged} text={libText}></NTKSpeechTextarea>
-        </NTKSpeechWorkArea>
+        <NTKSpeechWorkArea text={libText} onTextChanged={props.onTextChanged}></NTKSpeechWorkArea>
       </NTKVerboseContainer>
       ): <LoginPanel onSignIn={props.onOpenSignInDlg} onSignUp={props.onOpenSignUpDlg} />}
       <AddSpeechLibraryDialog 

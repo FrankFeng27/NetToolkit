@@ -30,6 +30,13 @@ export const updateCurrentLibrary = createAsyncThunk(
     return lib;
   }
 );
+export const updateCurrentLibraryContent = createAsyncThunk(
+  "speeches/updateCurrentLibraryContent", 
+  async(lib: SpeechLibraryItem) => {
+    await DataAccessor.updateSpeechLibrary(lib.id.toString(), lib.name, lib.content, lib.configuration);
+    return lib;
+  }
+)
 export const renameCurrentLibrary = createAsyncThunk(
   "speeches/renameCurrentLibrary",
   async (renameStruct: SpeechRenameStruct): Promise<SpeechRenameStruct> => {
@@ -43,7 +50,8 @@ export const renameCurrentLibrary = createAsyncThunk(
     const libs = renameStruct.libraries.filter(v => v.name.substring(0, length) === parentName)
     .map(v => ({id: v.id, name: `${parentName}${v.name.substring(length)}`}));
     await DataAccessor.renameSpeechLibraries(libs);
-    const libraries = await DataAccessor.getSpeechLibraries();
+    const librariesResult = await DataAccessor.getSpeechLibraries();
+    const libraries = librariesResult?.data?.result;
     return {library: {...renameStruct.library, name: renameStruct.name}, ...renameStruct, libraries};
   }
 );
@@ -171,6 +179,12 @@ const slice = createSlice({
       const removeStruct = action.payload;
       const libraries = SpeechUtils.sortSpeechLibraries(removeStruct.libraries);
       state.libraries = removeStruct.libraries;
+    })
+    .addCase(updateCurrentLibraryContent.pending, (state, _action) => {
+      state.status = "loading";
+    })
+    .addCase(updateCurrentLibraryContent.fulfilled, (state, _action) => {
+      state.status = "idle";
     });
   },
 });
