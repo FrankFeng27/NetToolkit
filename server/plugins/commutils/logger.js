@@ -26,5 +26,32 @@ var logger = new winston.createLogger({
   exitOnError: false
 });
 
-module.exports = logger;
+const createLogger = (logPath) => {
+  logPath = logPath ?? "./logs.log";
+  return new winston.createLogger({
+    transports: [
+      new winston.transports.File({
+        name: 'info-file',
+        level: 'info',
+        filename: logPath,
+        handleExceptions: true,
+        json: true,
+        maxsize: 5242880, //5MB
+        maxFiles: 5,
+        colorize: false
+      }),
+      new winston.transports.Console({
+        name: 'debug-console',
+        level: 'debug',
+        handleExceptions: true,
+        json: false,
+        colorize: true,
+        prettyPrint: true
+      })
+    ],
+    exitOnError: false
+  });
+};
+
+module.exports = createLogger;
 

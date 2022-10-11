@@ -8,5 +8,5 @@
         "noImplicitAny": false,
         "skipLibCheck": true,
     },
-    "include": ["./plugins/**/*.ts", "./routes/*.ts"]
+    "include": ["./plugins/**/*.ts", "./routes/*.ts", "./libs/**/*.ts"]
 }

@@ -32,6 +32,9 @@ server/plugins/express/expresser.js
 server/plugins/express/*-exporter.js
 server/routes/*.d.ts
 server/routes/*.js.map
+server/libs/**/*.d.ts
+server/libs/**/*.js.map
+server/libs/**/*.js
 server/routes/user-error-to-status.js
 test/*.spec.d.ts
 test/*.spec.js.map

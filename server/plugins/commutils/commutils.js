@@ -3,7 +3,7 @@
 "use strict";
 
 var _ = require('lodash');
-var logger = require('./logger');
+var logger = require('./logger')();
 var uuidv4 = require('uuid').v4;
 var crypto = require('crypto');
 
