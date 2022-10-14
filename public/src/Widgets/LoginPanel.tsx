@@ -4,6 +4,7 @@ import { styled } from "@mui/material/styles";
 
 const StyledA = styled('a')`
   cursor: pointer;
+  color: blue;
 `;
 
 const StyledMemoPanel = styled('div')`
